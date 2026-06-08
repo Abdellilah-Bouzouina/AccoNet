@@ -203,7 +203,7 @@ export const ProfessionalProfile: React.FC = () => {
             {activeTab === 'about' && (
               <div className="space-y-6" id="tab_content_about">
                 <div className="space-y-2">
-                  <h3 className="font-serif font-bold text-slate-900 text-sm">{direction === 'rtl' ? 'السيرة المهنية للعلبة' : 'السيرة المهنية'}</h3>
+                  <h3 className="font-serif font-bold text-slate-900 text-sm">{direction === 'rtl' ? 'السيرة المهنية' : 'السيرة المهنية'}</h3>
                   <p className="text-slate-300 text-xs sm:text-sm leading-relaxed whitespace-pre-line font-sans">
                     {tObj(pro.bio)}
                   </p>
