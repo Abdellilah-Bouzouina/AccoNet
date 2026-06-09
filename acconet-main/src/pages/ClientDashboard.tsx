@@ -68,11 +68,7 @@ export const ClientDashboard: React.FC = () => {
               <span className="text-slate-200">|</span>
               <span>{tObj(currentClient?.wilayaName)}</span>
             </p>
-          </div>
-          <div className="px-4 py-2.5 bg-blue-50 border border-blue-200 rounded-xl flex items-center gap-2 text-xs font-mono text-slate-500 shrink-0">
-            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
-            {language === 'ar' ? 'SCF — مطابق' : 'SCF Compliance Live'}
-          </div>
+          </div>        
         </div>
       </div>
 

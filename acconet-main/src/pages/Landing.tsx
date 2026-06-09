@@ -185,22 +185,7 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
-          3. PLATFORM TOOLS SECTION
-      ══════════════════════════════════════════ */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-14">
-        <div className="max-w-7xl mx-auto bg-white border border-blue-100 rounded-2xl p-6 shadow-classic">
-          <h3 className="font-serif font-black text-slate-800 text-lg mb-4 text-right rtl:text-right">أدوات المنصة:</h3>
-          <ul className="space-y-2 text-right rtl:text-right text-slate-700 text-sm list-none">
-            <li className="flex items-start gap-2 justify-end flex-row-reverse"><span>التسجيل المحاسبي الآلي.</span><span className="text-brand-primary mt-0.5">•</span></li>
-            <li className="flex items-start gap-2 justify-end flex-row-reverse"><span>إستخراج المعلومات من الوثائق أوتوماتيكيا حسب الحاجة (مبالغ...إلخ)</span><span className="text-brand-primary mt-0.5">•</span></li>
-            <li className="flex items-start gap-2 justify-end flex-row-reverse"><span>إعداد التصريحات في قوالب جاهزة.</span><span className="text-brand-primary mt-0.5">•</span></li>
-            <li className="flex items-start gap-2 justify-end flex-row-reverse"><span>مسح القوائم المالية واكتشاف الأخطاء.</span><span className="text-brand-primary mt-0.5">•</span></li>
-            <li className="flex items-start gap-2 justify-end flex-row-reverse"><span>تحليل القوائم المالية باستخدام الذكاء الاصطناعي وتقديم الاقتراحات.</span><span className="text-brand-primary mt-0.5">•</span></li>
-          </ul>
-        </div>
-      </section>
-
+     
       {/* ══════════════════════════════════════════
           4. INFO BAR — Real Map + Partner Logos
       ══════════════════════════════════════════ */}

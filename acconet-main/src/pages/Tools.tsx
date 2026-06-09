@@ -1,12 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { 
   Sparkles, FileText, Database, ShieldAlert, Cpu,
   ChevronDown, ChevronUp, Play, Info, RefreshCw 
 } from 'lucide-react';
 
+// 1. Localized data dictionary for the default interactive sandbox values
+const mockInputData = {
+  rawEntryText: {
+    en: 'Purchase of raw materials worth 10,000 DZD on account. Value-added tax: 19%',
+    fr: "Achat de matières premières d'une valeur de 10 000 DA à crédit. Taxe sur la valeur ajoutée : 19 %",
+    ar: 'شراء مواد أولية بقيمة 10000 دج على الحساب. الضريبة على القيمة المضافة 19%.'
+  },
+  rawBalanceState: {
+    en: 'Debit Ledger: 14,800,000 DZD | Credit Ledger: 14,850,000 DZD',
+    fr: 'Grand Livre Débit : 14 800 000 DZD | Grand Livre Crédit : 14 850 000 DZD',
+    ar: 'دفتر الأستاذ مدين: 14,800,000 دج | دفتر الأستاذ دائن: 14,850,000 دج'
+  },
+  smeForecastText: {
+    en: 'Improve cash flow margins for a food production factory in Blida.',
+    fr: 'Améliorer les marges de trésorerie pour une usine de production alimentaire à Blida.',
+    ar: 'تحسين هوامش التدفق النقدي لمصنع إنتاج أغذية في البليدة.'
+  }
+};
+
 export const Tools: React.FC = () => {
-  const { t, tObj } = useLanguage();
+  // 2. Added 'language' extraction from your context hook
+  const { language, t, tObj } = useLanguage(); 
+  const currentLang = (language === 'fr' || language === 'ar') ? language : 'en';
 
   // Selected tool index state
   const [expandedTool, setExpandedTool] = useState<number | null>(0);
@@ -15,19 +36,27 @@ export const Tools: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [simulationResult, setSimulationResult] = useState<string | null>(null);
 
-  // Inputs
-  const [rawEntryText, setRawEntryText] = useState('Paid 45,000 DZD cash for stationery including 19% VAT to office supplies supplier in Alger.');
+  // Inputs initialized cleanly using our localized dictionary
+  const [rawEntryText, setRawEntryText] = useState(mockInputData.rawEntryText[currentLang]);
   const [selectedMockPdf, setSelectedMockPdf] = useState('invoice_or_0982.pdf');
   const [monthlySales, setMonthlySales] = useState('4,500,000');
   const [monthlyStaffPayroll, setMonthlyStaffPayroll] = useState('1,200,000');
-  const [rawBalanceState, setRawBalanceState] = useState('Debit Ledger: 14,800,000 DZD | Credit Ledger: 14,850,000 DZD');
-  const [smeForecastText, setSmeForecastText] = useState('Improve cash flow margins for a food production factory in Blida.');
+  const [rawBalanceState, setRawBalanceState] = useState(mockInputData.rawBalanceState[currentLang]);
+  const [smeForecastText, setSmeForecastText] = useState(mockInputData.smeForecastText[currentLang]);
+
+  // 3. CRITICAL EFFECT: Re-populate fields and clear old simulator run text when language updates
+  useEffect(() => {
+    setRawEntryText(mockInputData.rawEntryText[currentLang]);
+    setRawBalanceState(mockInputData.rawBalanceState[currentLang]);
+    setSmeForecastText(mockInputData.smeForecastText[currentLang]);
+    setSimulationResult(null); // Clear terminal text so it doesn't stay in the wrong language
+  }, [currentLang]);
 
   const toolsList = [
     {
       id: 0,
       title: { ar: "التسجيل المحاسبي الآلي", fr: "Enregistrement Comptable Automatique", en: "Automated Accounting Entry" },
-      desc: { ar: "تحويل المعاملات النثرية إلى قيود محاسبية آلية متوافقة مع النظام المحاسبي المالي الجزائري.", fr: "Conversion automatique des transactions en écritures comptables conformes au SCF algérien.", en: "Automatically converts plain-text transactions into compliant double-entry journal records under the Algerian SCF." },
+      desc: { ar: "تحويل العمليات النثرية إلى قيود محاسبية آلية متوافقة مع النظام المحاسبي المالي الجزائري.", fr: "Conversion automatique des transactions en écritures comptables conformes au SCF algérien.", en: "Automatically converts plain-text transactions into compliant double-entry journal records under the Algerian SCF." },
       icon: Sparkles,
       color: "bg-brand-primary/10 border-brand-primary/20 text-brand-primary"
     },
@@ -41,7 +70,7 @@ export const Tools: React.FC = () => {
     {
       id: 2,
       title: { ar: "إعداد التصريحات في قوالب جاهزة", fr: "Préparation des Déclarations en Modèles Prêts", en: "Declaration Preparation with Ready-Made Templates" },
-      desc: { ar: "توليد التصريحات الجبائية والاجتماعية تلقائياً في قوالب جاهزة مطابقة للمتطلبات القانونية الجزائرية.", fr: "Génération automatique des déclarations fiscales et sociales dans des modèles conformes à la réglementation algérienne.", en: "Automatically generates tax and social declarations in ready-to-use templates compliant with Algerian regulations." },
+      desc: { ar: "توليد التصريحات الجبائية تلقائياً في قوالب جاهزة مطابقة للمتطلبات القانونية الجزائرية.", fr: "Génération automatique des déclarations fiscales et sociales dans des modèles conformes à la réglementation algérienne.", en: "Automatically generates tax and social declarations in ready-to-use templates compliant with Algerian regulations." },
       icon: Database,
       color: "bg-white border-blue-100 text-amber-400"
     },
@@ -68,28 +97,74 @@ export const Tools: React.FC = () => {
     setTimeout(() => {
       setIsProcessing(false);
       
+      // 4. Localized simulation outputs so the terminal changes languages correctly
       if (toolId === 0) {
-        setSimulationResult(`[COMPLIANT DOUBLE-ENTRY LEDGER GENERATED (SCF ALGERIA)]
-Date: 2026-05-22 | Status: Audited-Draft
+        if (currentLang === 'ar') {
+          setSimulationResult(`[القيود المحاسبية]
+التاريخ: 2026-05-22
+
+حسابات مدينة:
+- الصنف 3 (حساب 381 - المشتريات من المواد الأولية واللوازم): 10000 دج
+- الصنف 4 (حساب 4456 - الضريبة على القيمة المضافة القابلة للاسترجاع): 1900 دج
+
+حسابات دائنة:
+- الصنف 4 (حساب 401 - موردو المخزونات والخدمات): 11900 دج
+
+[البيان]: تسجيل عملية شراء مواد أولية على الحساب .`);
+        } else if (currentLang === 'fr') {
+          setSimulationResult(`[Ecritures Comptables]
+Date: 22-05-2026
+
+Comptes débiteurs :
+- Classe 3 (compte 381 - Achats de matières premières et fournitures) : 10 000 DA
+- Classe 4 (compte 4456 - Taxe sur la valeur ajoutée récupérable) : 1 900 DA
+
+Comptes créditeurs :
+- Classe 4 (compte 401 - Fournisseurs de stocks et de services) : 11 900 DA
+
+[Libellé]: Constatation Achat matières premières.`);
+        } else {
+          setSimulationResult(`[Accounting Entries]
+Date: 2026-05-22
 
 DEBIT LINES:
-- Class 6 (Compte 607 - Achats de fournitures stockables): 37,815 DZD
-- Class 4 (Compte 4456 - TVA récupérable sur autres biens & services): 7,185 DZD (19% VAT Bracket)
+
+- Class 3 (Account 381 - Purchases of raw materials and supplies): 10,000 DA
+- Class 4 (Account 4456 - Recoverable value-added tax): 1,900 DA
 
 CREDIT LINES:
-- Class 5 (Compte 53 - Caisse nationale liquidités): 45,000 DZD
+- Class 4 (Account 401 - Suppliers of Inventory and Services): 45,000 DZD
 
-[Narrative]: Registration of office suppliers receipts under SCF rules. Matching tax offset voucher generated.`);
+[Description]: Recognition of Raw Material Purchase.`);        }
       } else if (toolId === 1) {
-        setSimulationResult(`[AI OCR SCAN DIAGNOSTIC REPORT: ${selectedMockPdf}]
-- Document Type: Standard Supplier Expense Invoice
+        if (currentLang === 'ar') {
+          setSimulationResult(`[تقرير تشخيص مسح الذكاء الاصطناعي OCR: ${selectedMockPdf}]
+- نوع الوثيقة: فاتورة مورد
+- اسم المورد: Sarl Mitidja Carton Algerie (المركز: البليدة)
+- رقم النيف (NIF) المكتشف: 001209043224190 
+- المبلغ الصافي (HT): 500,000 دج
+- معدل القيمة المضافة: 19% -> 95,000 دج
+- المبلغ الإجمالي (TTC): 595,000 دج
+`);
+        } else if (currentLang === 'fr') {
+          setSimulationResult(`[RAPPORT DIAGNOSTIC SCAN OCR IA: ${selectedMockPdf}]
+- Type de Document: Facture de Fournisseur
+- Nom du Fournisseur: Sarl Mitidja Carton Algerie (Siège: Blida)
+- NIF Détecté: 001209043224190 
+- Montant Hors Taxe (HT): 500 000 DZD
+- Taux de TVA: 19%  -> 95 000 DZD
+- Montant TTC: 595 000 DZD
+`);
+        } else {
+          setSimulationResult(`[AI OCR SCAN DIAGNOSTIC REPORT: ${selectedMockPdf}]
+- Document Type: Supplier Expense Invoice
 - Vendor Name: Sarl Mitidja Carton Algerie (HQ: Blida)
-- Supplier NIF Detected: 001209043224190 (VERIFIED ON DGI REGISTER)
-- Date: 2026-04-10
+- Supplier NIF Detected: 001209043224190 
 - Base Amount (HT): 500,000 DZD
-- VAT rate: 19% (Compte 445) -> 95,000 DZD
+- VAT rate: 19% -> 95,000 DZD
 - Total Amount (TTC): 595,000 DZD
-- Match Confidence: 99.4% (AccoNet OCR Anchor V2)`);
+`);
+        }
       } else if (toolId === 2) {
         const sales = Number(monthlySales.replace(/,/g, '')) || 4500000;
         const payroll = Number(monthlyStaffPayroll.replace(/,/g, '')) || 1200000;
@@ -97,37 +172,101 @@ CREDIT LINES:
         const irgSim = Math.round(payroll * 0.18);
         const totalTaxOutflow = tap + irgSim;
 
-        setSimulationResult(`[G50 MONTHLY RETURN CALCULATION PREVIEW]
+        if (currentLang === 'ar') {
+          setSimulationResult(`[معاينة حساب الإقرار الشهري G50]
+رقم الأعمال (المبيعات خارج الضريبة): ${sales.toLocaleString()} دج
+كتلة أجور الموظفين: ${payroll.toLocaleString()} دج
+
+الرسوم والضرائب المتوقعة (قانون المالية الجزائري):
+- رمز الضريبة 101 (TAP - الرسم على النشاط المهني @ 1.5%): ${tap.toLocaleString()} دج
+- رمز الضريبة 110 (IRG - الضريبة على الدخل الإجمالي للمرتبات): ${irgSim.toLocaleString()} دج
+- حقوق الطابع العيني: 2,500 دج
+-----------------------------------------------------------
+إجمالي مدفوعات G50 المتوقعة: ${totalTaxOutflow.toLocaleString()} دج`);
+        } else if (currentLang === 'fr') {
+          setSimulationResult(`[APERCU DU CALCUL DE LA DECLARATION MENSUELLE G50]
+Chiffre d'Affaires (Ventes HT): ${sales.toLocaleString()} DZD
+Registre des Salaires Personnel: ${payroll.toLocaleString()} DZD
+
+ESTIMATION DES CODES D'IMPOSITION (Loi de Finances Algérie):
+- Code Impôt 101 (TAP @ 1.5%): ${tap.toLocaleString()} DZD
+- Code Impôt 110 (IRG Salaires avec barème forfaitaire): ${irgSim.toLocaleString()} DZD
+- Droit de Timbre: 2 500 DZD
+-----------------------------------------------------------
+FLUX DE SORTIE G50 PROJETÉ: ${totalTaxOutflow.toLocaleString()} DZD`);
+        } else {
+          setSimulationResult(`[G50 MONTHLY RETURN CALCULATION PREVIEW]
 Turnover Range (Sales HT): ${sales.toLocaleString()} DZD
 Staff Salary Register: ${payroll.toLocaleString()} DZD
 
-ESTIMATED FISCAL LEVY CODES (Algeria Finance Act):
-- Code Impôt 101 (TAP - Taxe sur l'Activité Professionnelle @ 1.5%): ${tap.toLocaleString()} DZD
-- Code Impôt 110 (IRG Salaires avec barème forfaitaire): ${irgSim.toLocaleString()} DZD
-- Tax Timbre (Stamp Duty / Cash payments CAP): 2,500 DZD
+ESTIMATED FISCAL LEVY CODES:
+- Code Impôt 101 (TAP @ 1.5%): ${tap.toLocaleString()} DZD
+- Code Impôt 110 (IRG Salaires): ${irgSim.toLocaleString()} DZD
+- Stamp Duty: 2,500 DZD
 -----------------------------------------------------------
-PROJECTED G50 OUTFLOW: ${totalTaxOutflow.toLocaleString()} DZD
-
-*Note: For companies holding the "Startup Label", the TAP levy (Code 101) code drops to 0 DZD.`);
+PROJECTED G50 OUTFLOW: ${totalTaxOutflow.toLocaleString()} DZD`);
+        }
       } else if (toolId === 3) {
-        setSimulationResult(`[SCF TRIAL BALANCE VERIFICATION SCAN]
+        if (currentLang === 'ar') {
+          setSimulationResult(`[موازنة المراجعة المالي SCF - فحص التحقق]
+الحالة: تم اكتشاف خلل حرج في التوازن
+
+فشل مطابقة التشخيص:
+مجموع المدين: 14,800,000 دج
+مجموع الدائن: 14,850,000 دج
+الفارق المكتشف: -50,000 دج (رصيد غير متطابق)
+
+إجراء تصحيحي موصى به:
+سجل "حساب الانتظار (حساب 47100)" رصيدًا دائنًا معلقًا بقيمة 50,000 دج. تحقق من الإيداعات المصرفية غير المسجلة أو قسائم G50 غير المصفاة لدى الخزينة.`);
+        } else if (currentLang === 'fr') {
+          setSimulationResult(`[SCAN DE VÉRIFICATION DE LA BALANCE SCF]
+Statut: ÉCART CRITIQUE DÉTECTÉ
+
+ÉCHEC DE CORRESPONDANCE DIAGNOSTIC:
+Somme Totale Débit: 14 800 000 DZD
+Somme Totale Crédit: 14 850 000 DZD
+Écart détecté: -50 000 DZD (Balance non équilibrée)
+
+VOUCHER DE CORRECTION RECOMMANDÉ:
+Le "Compte d'attente (Compte 47100)" enregistre un solde créditeur de 50 000 DZD. Vérifiez les dépôts bancaires non enregistrés ou les quittances G50 non apurées au Trésor.`);
+        } else {
+          setSimulationResult(`[SCF TRIAL BALANCE VERIFICATION SCAN]
 Status: CRITICAL EXCESS DETECTED
 
 DIAGNOSIS MATCH FAIL:
 Total Debit Sum: 14,800,000 DZD
 Total Credit Sum: 14,850,000 DZD
-Variance detected: -50,000 DZD (Unmatched Balance Account)
+Variance detected: -50,000 DZD
 
 CORRECTION VOUCHER RECOMMENDED:
-"Suspense Balance Account (Compte 47100)" registered an outstanding credit of 50,000 DZD. Check for unrecorded banking deposits or uncleared G50 vouchers at Algerian Treasury.`);
+"Suspense Balance Account (Compte 47100)" registered an outstanding credit of 50,000 DZD.`);
+        }
       } else if (toolId === 4) {
-        setSimulationResult(`[AI FINANCIAL STRATEGIC ACTION MEMO]
+        if (currentLang === 'ar') {
+          setSimulationResult(`[مذكرة عمل استراتيجية مالية بالذكاء الاصطناعي]
+التوجيه الأساسي: "${smeForecastText}"
+
+توصيات محلية جزائرية:
+1. المزايا الضريبية للمناطق: تستفيد منشآت التحويل الغذائي والزراعي في البليدة من إعفاءات ضريبية ممتدة (IBS/IRG). تحقق من ملفات الإعفاء الخاصة بك.
+2. شراء السلع بدون ضريبة (Achats en Franchise): تقدم بطلب للاستفادة من الإعفاء المحتسب للمعدات الصناعية لحماية السيولة النقدية الفورية.
+3. تخفيضات اشتراكات الضمان الاجتماعي CNAS: استفد من تدابير الوكالة الوطنية للتشغيل (ANEM) التي تخفض حصة صاحب العمل في اشتراكات CNAS بنسبة تصل إلى 30% للموظفين الجدد.`);
+        } else if (currentLang === 'fr') {
+          setSimulationResult(`[MEMO STRATÉGIQUE FINANCIER PAR IA]
+Directive Principale: "${smeForecastText}"
+
+RECOMMANDATIONS LOCALES:
+1. Optimisation Fiscale Agro-alimentaire: Les unités de transformation à Blida bénéficient d'exonérations d'IBS/IRG. Validez vos dossiers d'exemption.
+2. Achats en Franchise de TVA: Sollicitez les attestations de dispense de TVA pour l'acquisition de biens d'équipements afin de préserver votre trésorerie immédiate.
+3. Allégements CNAS Patronaux: Profitez des abattements ANEM réduisant la quote-part patronale CNAS jusqu'à 30% pour les recrutements de jeunes diplômés.`);
+        } else {
+          setSimulationResult(`[AI FINANCIAL STRATEGIC ACTION MEMO]
 Core Directive: "${smeForecastText}"
 
 LOCAL RECOMMENDATIONS:
-1. Agriculture Tax Shield: Agriculture and transformation facilities in Blida benefit from a 10-year IBS/IRG tax holiday. Validate exemption files under Code IBS 54.
-2. VAT Cash Exemption: Apply for local VAT buy-back exemptions (fardeau fiscal) for capital machinery to preserve immediate liquidity reserves.
-3. Payroll CNAS Relief: Benefit from the national employment active premium (ANEM) which reduces employer CNAS wage cost contribution by up to 30% for newly contracted local graduates.`);
+1. Agro-Tax Holiday: Processing facilities in Blida benefit from specific IBS/IRG structural tax exemptions. Validate eligibility.
+2. VAT Exemption Certificates: Apply for local "Achat en Franchise" certificates for industrial capital machinery to shield cash flow.
+3. Payroll CNAS Relief: Apply for national ANEM subsidies that mitigate your employer CNAS tax contributions by up to 30% for local graduate staff.`);
+        }
       }
     }, 600);
   };
@@ -202,7 +341,6 @@ LOCAL RECOMMENDATIONS:
                     <h2 className="font-serif font-black text-brand-primary text-sm sm:text-base leading-none">
                       ⚙️ {t('activeSimulator')}: {tObj(toolsList[expandedTool].title)}
                     </h2>
-                    <p className="text-[9px] text-slate-500 font-mono tracking-widest mt-1 uppercase">{t('complianceSandboxEngineSub')}</p>
                   </div>
                   <span className="text-[10px] bg-brand-primary/10 border border-brand-primary/20 text-brand-primary px-2.5 py-1 rounded font-mono tracking-wider">{t('scfVersionLabel')}</span>
                 </div>
@@ -218,7 +356,7 @@ LOCAL RECOMMENDATIONS:
                         rows={3}
                         value={rawEntryText}
                         onChange={(e) => setRawEntryText(e.target.value)}
-                        className="w-full border border-blue-200 p-3 rounded-lg text-xs text-white bg-white/40 focus:outline-none focus:border-brand-primary resize-none"
+                        className="w-full border border-blue-200 p-3 rounded-lg text-xs text-slate-900 bg-white/40 focus:outline-none focus:border-brand-primary "
                       />
                     </div>
                   )}
@@ -228,12 +366,12 @@ LOCAL RECOMMENDATIONS:
                     <div className="space-y-3">
                       <label className="block text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">{t('chooseVoucherScan')}</label>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        {['invoice_or_0982.pdf', 'gas_sonelgaz_9918.pdf', 'anem_employ_charges.pdf'].map((f) => (
+                        {['invoice_or_0982.pdf'].map((f) => (
                           <button
                             key={f}
                             type="button"
                             onClick={() => setSelectedMockPdf(f)}
-                            className={`p-2.5 text-[10px] border rounded-lg font-mono text-center cursor-pointer transition ${selectedMockPdf === f ? 'bg-brand-primary/10 border-brand-primary text-brand-primary font-bold' : 'border-blue-100 hover:glass/5 text-slate-400'}`}
+                            className={`p-2.5 text-[10px] border rounded-lg font-mono text-center cursor-pointer transition ${selectedMockPdf === f ? 'bg-brand-primary/10 border-brand-primary text-brand-primary font-bold' : 'border-blue-100 hover:bg-slate-50 text-slate-400'}`}
                           >
                             📄 {f}
                           </button>
@@ -245,15 +383,14 @@ LOCAL RECOMMENDATIONS:
                   {/* TOOL 2 INPUT */}
                   {expandedTool === 2 && (
                     <div className="space-y-3">
-                      <p className="text-[11px] text-brand-primary bg-brand-primary/10 p-2.5 border border-brand-primary/20 font-mono rounded-lg">{t('inputTurnoverStats')}</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1">
                           <label className="block text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">{t('monthlySalesHt')}</label>
                           <input 
                             type="text" 
                             value={monthlySales}
                             onChange={(e) => setMonthlySales(e.target.value)}
-                            className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-white font-mono bg-white/40 focus:outline-none focus:border-brand-primary"
+                            className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono bg-white/40 focus:outline-none focus:border-brand-primary"
                           />
                         </div>
                         <div className="space-y-1">
@@ -262,7 +399,7 @@ LOCAL RECOMMENDATIONS:
                             type="text" 
                             value={monthlyStaffPayroll}
                             onChange={(e) => setMonthlyStaffPayroll(e.target.value)}
-                            className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-white font-mono bg-white/40 focus:outline-none focus:border-brand-primary"
+                            className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono bg-white/40 focus:outline-none focus:border-brand-primary"
                           />
                         </div>
                       </div>
@@ -277,7 +414,7 @@ LOCAL RECOMMENDATIONS:
                         type="text" 
                         value={rawBalanceState}
                         onChange={(e) => setRawBalanceState(e.target.value)}
-                        className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-white font-mono bg-white/40 focus:outline-none focus:border-brand-primary"
+                        className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono bg-white/40 focus:outline-none focus:border-brand-primary"
                       />
                     </div>
                   )}
@@ -290,7 +427,7 @@ LOCAL RECOMMENDATIONS:
                         type="text" 
                         value={smeForecastText}
                         onChange={(e) => setSmeForecastText(e.target.value)}
-                        className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-white bg-white/40 focus:outline-none focus:border-brand-primary"
+                        className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-slate-900 bg-white/40 focus:outline-none focus:border-brand-primary"
                       />
                     </div>
                   )}
@@ -303,12 +440,12 @@ LOCAL RECOMMENDATIONS:
                   >
                     {isProcessing ? (
                       <>
-                        <RefreshCw className="w-4 h-4 animate-spin text-brand-primary" />
+                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
                         <span>{t('processingLedgerParams')}</span>
                       </>
                     ) : (
                       <>
-                        <Play className="w-4 h-4 fill-slate-950 text-white shrink-0" />
+                        <Play className="w-4 h-4 fill-white text-white shrink-0" />
                         <span>{t('executeSimulation')}</span>
                       </>
                     )}
@@ -321,7 +458,7 @@ LOCAL RECOMMENDATIONS:
                   <h3 className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest block">{t('simulatedOutput')}</h3>
                   
                   {simulationResult ? (
-                    <div className="bg-slate-950 text-brand-primary font-mono p-4 rounded-xl text-xs overflow-x-auto border border-blue-100 leading-relaxed whitespace-pre-wrap min-h-[160px] text-left">
+                    <div className="bg-slate-950 text-emerald-400 font-mono p-4 rounded-xl text-xs overflow-x-auto border border-blue-100 leading-relaxed whitespace-pre-wrap min-h-[160px] text-left">
                       {simulationResult}
                     </div>
                   ) : (

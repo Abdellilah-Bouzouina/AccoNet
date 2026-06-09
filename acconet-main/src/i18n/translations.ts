@@ -18,7 +18,7 @@ export const specialtiesTranslations = {
     en: "Statutory Auditor"
   },
   "certified-accountant": {
-    ar: "مهني خبير",
+    ar: "خبير محاسب",
     fr: "Expert-Comptable",
     en: "Chartered Accountant"
   },
@@ -28,7 +28,7 @@ export const specialtiesTranslations = {
     en: "Tax Consultant"
   },
   "judicial-expert": {
-    ar: "مهني قضائي",
+    ar: "خبير قضائي",
     fr: "Expert Judiciaire",
     en: "Judicial Expert"
   }
@@ -153,7 +153,7 @@ export const translations: TranslationDictionary = {
 
   // Featured Pros
   featuredTitle: {
-    ar: "أبرز الخبراء المتاحين هذا الأسبوع",
+    ar: "أبرز المهنيين المتاحين هذا الأسبوع",
     fr: "Experts vedettes disponibles cette semaine",
     en: "Featured Available Experts of the Week"
   },
@@ -1078,7 +1078,21 @@ export const translations: TranslationDictionary = {
     fr: "Traces de modification des statuts professionnels d'exercice.",
     en: "Real-time records tracking modifications of legal cabinet statuses."
   },
-
+mockMonthlyStaffPayroll: {
+    ar: "1,200,000",
+    fr: "1.200.000",
+    en: "1,200,000"
+  },
+  mockRawBalanceState: {
+    ar: "دفتر الأستاذ المدين: 14,800,000 دج | دفتر الأستاذ الدائن: 14,850,000 دج",
+    fr: "Grand Livre Débiteur: 14 800 000 DZD | Grand Livre Créditeur: 14 850 000 DZD",
+    en: "Debit Ledger: 14,800,000 DZD | Credit Ledger: 14,850,000 DZD"
+  },
+  mockSmeForecastText: {
+    ar: "تحسين هوامش التدفق النقدي لمصنع إنتاج غذائي في البليدة.",
+    fr: "Améliorer les marges de trésorerie pour une usine de production alimentaire à Blida.",
+    en: "Improve cash flow margins for a food production factory in Blida."
+},
   allRightsReserved: {
     ar: "جميع الحقوق محفوظة. تم تصميمه بكل فخر لخدمة الإدارة الجزائرية والشركات الصاعدة.",
     fr: "Tous droits réservés. Conçu avec fierté pour l'administration et les PME en Algérie.",
