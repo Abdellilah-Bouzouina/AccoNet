@@ -8,8 +8,6 @@ interface SearchFiltersProps {
   setSelectedWilaya: (id: number) => void;
   selectedSpecialty: string;
   setSelectedSpecialty: (key: string) => void;
-  maxPrice: number;
-  setMaxPrice: (price: number) => void;
   minRating: number;
   setMinRating: (rating: number) => void;
   onlyAvailable: boolean;
@@ -24,8 +22,6 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
   setSelectedWilaya,
   selectedSpecialty,
   setSelectedSpecialty,
-  maxPrice,
-  setMaxPrice,
   minRating,
   setMinRating,
   onlyAvailable,
@@ -77,8 +73,6 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
             id="sort_by_dropdown"
           >
             <option value="rating" className="bg-white text-slate-900">{t('sortRating')}</option>
-            <option value="price-asc" className="bg-white text-slate-900">{t('sortPriceAsc')}</option>
-            <option value="price-desc" className="bg-white text-slate-900">{t('sortPriceDesc')}</option>
             <option value="experience" className="bg-white text-slate-900">{t('sortExperience')}</option>
           </select>
         </div>
@@ -126,30 +120,6 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
                 {selectedSpecialty === spec && <Check className="w-3.5 h-3.5 text-brand-primary" />}
               </button>
             ))}
-          </div>
-        </div>
-
-        {/* Hourly Rate Price Slider */}
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
-              {t('priceRange')}
-            </label>
-            <span className="text-xs font-mono font-bold text-brand-primary">{maxPrice.toLocaleString()} DZD</span>
-          </div>
-          <input 
-            type="range" 
-            min={3000} 
-            max={10000} 
-            step={500}
-            value={maxPrice} 
-            onChange={(e) => setMaxPrice(Number(e.target.value))}
-            className="w-full accent-brand-primary h-1 bg-slate-800 rounded-lg cursor-pointer"
-            id="price_range_slider"
-          />
-          <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-            <span>3,000 DZD</span>
-            <span>10,000 DZD</span>
           </div>
         </div>
 

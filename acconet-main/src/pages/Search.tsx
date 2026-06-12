@@ -20,7 +20,6 @@ export const Search: React.FC = () => {
   const [keyword, setKeyword] = useState(queryKeyword);
   const [selectedWilaya, setSelectedWilaya] = useState<number>(queryWilaya);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>(querySpecialty);
-  const [maxPrice, setMaxPrice] = useState<number>(9500);
   const [minRating, setMinRating] = useState<number>(4.0);
   const [onlyAvailable, setOnlyAvailable] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>('rating');
@@ -42,13 +41,12 @@ export const Search: React.FC = () => {
       setIsLoading(false);
     }, 450);
     return () => clearTimeout(timer);
-  }, [selectedWilaya, selectedSpecialty, maxPrice, minRating, onlyAvailable, sortBy, keyword]);
+  }, [selectedWilaya, selectedSpecialty, minRating, onlyAvailable, sortBy, keyword]);
 
   const handleResetFilters = () => {
     setKeyword('');
     setSelectedWilaya(0);
     setSelectedSpecialty('');
-    setMaxPrice(9500);
     setMinRating(4.0);
     setOnlyAvailable(false);
     setSortBy('rating');
@@ -76,17 +74,12 @@ export const Search: React.FC = () => {
       return false;
     }
 
-    // 4. Max price filter
-    if (pro.hourlyRate > maxPrice) {
-      return false;
-    }
-
-    // 5. Min rating filter
+    // 4. Min rating filter
     if (pro.rating < minRating) {
       return false;
     }
 
-    // 6. Only available filter
+    // 5. Only available filter
     if (onlyAvailable && !pro.available) {
       return false;
     }
@@ -99,13 +92,7 @@ export const Search: React.FC = () => {
     if (sortBy === 'rating') {
       return b.rating - a.rating;
     }
-    if (sortBy === 'price-asc') {
-      return a.hourlyRate - b.hourlyRate;
-    }
-    if (sortBy === 'price-desc') {
-      return b.hourlyRate - a.hourlyRate;
-    }
-    if (sortBy === 'experience') {
+     if (sortBy === 'experience') {
       return b.yearsExperience - a.yearsExperience;
     }
     return 0;
@@ -135,8 +122,6 @@ export const Search: React.FC = () => {
               setSelectedWilaya={setSelectedWilaya}
               selectedSpecialty={selectedSpecialty}
               setSelectedSpecialty={setSelectedSpecialty}
-              maxPrice={maxPrice}
-              setMaxPrice={setMaxPrice}
               minRating={minRating}
               setMinRating={setMinRating}
               onlyAvailable={onlyAvailable}
@@ -217,7 +202,7 @@ export const Search: React.FC = () => {
                     <div className="space-y-2">
                       <h3 className="font-serif font-black text-slate-900 text-base">لم يُعثر على مهني مطابق</h3>
                       <p className="text-slate-400 text-xs leading-relaxed max-w-sm mx-auto font-sans">
-                        No certified practitioners met your exact constraints in our active SCF database. Relax maximum fee sliders or remove wilaya constraints.
+                        No certified practitioners met your exact constraints in our active database. Remove wilaya or keyword constraints to find more professionals.
                       </p>
                     </div>
                     <button 

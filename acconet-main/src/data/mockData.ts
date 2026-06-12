@@ -42,6 +42,9 @@ export interface Professional {
     title: Translation;
     description: Translation;
   }[];
+  // ADDED THESE TWO FIELDS TO SUPPORT PHONE AND ADDRESS DATA WITHIN THE CARD
+  phone?: string;
+  address?: Translation;
 }
 
 export interface Client {
@@ -166,50 +169,52 @@ export const wilayas: Wilaya[] = [
   { id: 67, code: "67", name: { ar: "بريكة", fr: "Barika", en: "Barika" }, region: { ar: "الشمال الشرقي", fr: "Nord-Est", en: "North-East" } },
   { id: 68, code: "68", name: { ar: "قصر الشلالة", fr: "Ksar Chellala", en: "Ksar Chellala" }, region: { ar: "الشمال الغربي", fr: "Nord-Ouest", en: "North-West" } },
   { id: 69, code: "69", name: { ar: "شلوغ العيد", fr: "Chelghoum Laïd", en: "Chelghoum Laid" }, region: { ar: "الشمال الشرقي", fr: "Nord-Est", en: "North-East" } }
-
 ];
 
 export const professionals: Professional[] = [
   {
     id: "p1",
     name: {
-      ar: "سفيان بن عمار",
-      fr: "Sofiane Benamara",
-      en: "Sofiane Benamara"
+      ar: "مجاهد عبد الرحمان",
+      fr: "Medjahed Abderrahmane",
+      en: "Medjahed Abderrahmane"
     },
-    initials: "SB",
+    initials: "MA",
     avatarBg: "bg-teal-700 text-white",
-    specialty: "certified-accountant",
+    specialty: "statutory-auditor",
     wilayaId: 16,
-    wilayaName: { ar: "الجزائر", fr: "Alger", en: "Algiers" },
+    wilayaName: { ar: "غليزان", fr: "Relizane", en: "Relizan" },
     rating: 4.9,
     reviewCount: 38,
-    hourlyRate: 6500,
     available: true,
-    yearsExperience: 14,
-    accreditationNumber: "CNEC/2012/948",
+    hourlyRate: 6500,
+    yearsExperience: 20, 
+    accreditationNumber: "1929",
     completionRate: 98,
     clientsServed: 124,
+    
+    // UPDATED PHONE NUMBER AND TRANSLATED ADDRESS OBJECT HERE
+    phone: "+213 5600220683",
+    address: {
+      ar: "حي 121 قطعة مونفيزو رقم 06 غليزان",
+      fr: "Cité 121 Lot Monviso N° 06, Relizane",
+      en: "121 Monviso Allotment Quarter, No. 06, Relizane"
+    },
+
     bio: {
-      ar: "مهني محاسب معتمد يتمتع بأكثر من 14 عامًا من الخبرة في مرافقة الشركات الناشئة والمؤسسات الصغيرة والمتوسطة في الجزائر العاصمة. متخصص في الهيكلة الجبائية وإعداد الميزانيات السنوية.",
-      fr: "Expert-comptable agréé avec plus de 14 ans d'expérience dans l'accompagnement des startups et PME à Alger. Spécialiste de la structuration fiscale et de la préparation des bilans annuels.",
-      en: "Certified Chartered Accountant with over 14 years of experience supporting startups and SMEs in Algiers. Specialist in tax structuring and annual balance sheet preparation."
+      ar: "محافظ حسابات ومحاسب معتمد بخبرة تفوق 15 سنة.",
+      fr: "Commissaire au comptes et comptable agréé, avec plus de 15 ans d'expérience.",
+      en: "Accountant and Certified Public Accountant with over 15 years of experience."
     },
     services: [
       {
-        title: { ar: "إعداد الميزانية السنوية والتقارير المالية", fr: "Préparation du bilan annuel et liasse fiscale", en: "Annual balance sheet & tax pack preparation" },
-        description: { ar: "مراجعة شاملة للحسابات السنوية وإعداد الملف الجبائي النهائي الخاص بمصالح الضرائب.", fr: "Audit complet des comptes annuels et dépôt réglementaire auprès de l'administration fiscale.", en: "Full audit of annual accounts and official filing with tax authorities." },
-        price: "120,000 DZD"
+        title: { ar: "إعداد التصريحات الجبائية وشبه الجبائية", fr: "مسك المحاسبة", en: "تقديم الاستشارات الجبائية" },
       },
       {
-        title: { ar: "نصائح وإرشادات جبائية للشركات الناشئة", fr: "Conseil fiscal ciblé pour startups", en: "Targeted tax advisory for startups" },
-        description: { ar: "تحسين العبء الضريبي والاستفادة من الإعفاءات الجمركية والجبائية الخاصة بالشركات الحاصلة على علامة ناشئة.", fr: "Optimisation de la charge fiscale et bénéfice des exonérations du label Startup en Algérie.", en: "Tax load optimization and leveraging benefits of the Algerian Startup Label." },
-        price: "45,000 DZD"
+        title: { ar: "مسك المحاسبة", fr: " Tenue de comptabilité", en: " bookkeeping services" },
       },
       {
-        title: { ar: "مسك الدفاتر المحوسبة الشهرية", fr: "Tenue de comptabilité mensuelle numérisée", en: "Monthly digital bookkeeping services" },
-        description: { ar: "مسك الحسابات بشكل دوري عبر برامج متوافقة وتوليد التصريحات الشهرية G50.", fr: "Saisie régulière, lettrage et génération automatique des déclarations G50 mensuelles.", en: "Regular bookkeeping, matching, and automated generation of monthly G50 filings." },
-        price: "35,000 DZD / Month"
+        title: { ar: "تقديم الاستشارات الجبائية", fr: "Conseil fiscal", en: "Tax advisory"},
       }
     ],
     reviews: [
@@ -218,9 +223,9 @@ export const professionals: Professional[] = [
         clientName: "Yassine K.",
         rating: 5,
         comment: {
-          ar: "الاستاذ سفيان محترف ومتمكن جداً. ساعد شركتنا الناشئة في الحصول على الإعفاءات الضريبية وتأسيس نظام محاسبي متكامل وقوي.",
-          fr: "Mr. Sofiane est extrêmement professionnel. Il a guidé notre startup vers les exonérations fiscales et a établi une comptabilité solide.",
-          en: "Mr. Sofiane is extremely professional. He guided our startup through the tax exemptions and set up a solid accounting system."
+          ar: "الاستاذ مجاهد محترف ومتمكن جداً. ساعد شركتنا في مختلف الالتزامات الجبائية .",
+          fr: "Mr.Medjahed est un professionnel très compétent. Il a aidé notre entreprise à remplir diverses obligations fiscales.",
+          en: "Mr. Medjahed is a highly competent professional. He has helped our company fulfill various tax obligations."
         },
         date: "2026-04-12"
       },
@@ -248,431 +253,96 @@ export const professionals: Professional[] = [
       }
     ],
     history: [
-      { year: "2018 - Present", title: { ar: "شريك مؤسس، مكتب بن عمار للمحاسبة", fr: "Associé Gérant, Cabinet Benamara", en: "Managing Partner, Benamara Accounting Cabinet" }, description: { ar: "تسيير محفظة تضم أزيد من 50 شركة جزائرية ناشئة وصغيرة.", fr: "Gestion d'un portefeuille de plus de 50 startups et PME algériennes.", en: "Managing a portfolio of over 50 Algerian startups and SMEs." } },
-      { year: "2012 - 2018", title: { ar: "مدير مالي أول، مجموعة صناعية بالرويبة", fr: "Directeur Financier, Groupe Industriel Rouïba", en: "Senior Financial Director, Rouiba Industrial Group" }, description: { ar: "الإشراف على الميزانيات المجمعة والامتثال الضريبي.", fr: "Supervision des bilans consolidés et de la conformité fiscale.", en: "Supervision of consolidated balances and tax compliance." } }
+      {
+        year: "2016",
+        title: {
+          ar: "أستاذ مكلف بالدروس والأعمال الموجهة - المركز الجامعي غليزان",
+          fr: "Professeur Chargé de Cours / TD Module Comptabilité",
+          en: "Lecturer / Seminar Instructor in Accounting"
+        },
+        description: {
+          ar: "تقديم مقياس المحاسبة في المركز الجامعي أحمد زبانة بغليزان.",
+          fr: "Enseignement du module Comptabilité au Centre Universitaire Ahmed Zabana – Relizane.",
+          en: "Taught the Accounting module at the Ahmed Zabana University Center – Relizane."
+        }
+      },
+      {
+        year: "2014",
+        title: {
+          ar: "خبير في تقييم العتاد والمعدات",
+          fr: "Expertise de matériels",
+          en: "Equipment & Machinery Valuation Expert"
+        },
+        description: {
+          ar: "تقييم عتاد شركات البناء، الأشغال العمومية، الأشغال الريفية والهيدروليكية وغيرها.",
+          fr: "Expertise de matériels pour entreprises de travaux bâtiments, travaux publics, travaux hydrauliques et autres.",
+          en: "Equipment valuation for building construction, public works, and hydraulic engineering companies, among others."
+        }
+      },
+      {
+        year: "2012 - 2013",
+        title: {
+          ar: "مرافق جبائي للشركات متعددة الجنسيات",
+          fr: "Accompagnateur fiscal pour des sociétés multinationales",
+          en: "Tax Advisor for Multinational Corporations"
+        },
+        description: {
+          ar: "تقديم الاستشارات والمرافقة الجبائية لشركات متعددة الجنسيات (جزائرية-إسبانية).",
+          fr: "Accompagnement et conseil fiscal pour des sociétés multinationales (Algéro-Espagnole).",
+          en: "Provided tax guidance and compliance support for multinational joint ventures (Algerian-Spanish)."
+        }
+      },
+      {
+        year: "2010",
+        title: {
+          ar: "اعتماد محافظ حسابات / محاسب معتمد",
+          fr: "Agrément N° 1929 Commissaire Aux Comptes / Comptable",
+          en: "Accreditation No. 1929 Statutory Auditor / Accountant"
+        },
+        description: {
+          ar: "الحصول على الاعتماد الرسمي من المنظمة الوطنية للخبراء المحاسبين ومحافظي الحسابات والمحاسبين المعتمدين (ONECC).",
+          fr: "Obtention de l'agrément auprès المصف الوطني للخبراء المحاسبين ومحافظي الحسابات والمحاسبين المعتمدين (ONECC) Algérien.",
+          en: "Obtained official certification from the Algerian National Organization of Chartered Accountants, Auditors, and Certified Accountants (ONECC)."
+        }
+      },
+      {
+        year: "2007 - 2010",
+        title: {
+          ar: "محاسب رئيسي - مكتب خبرة محاسبية",
+          fr: "Comptable Principal, Cabinet d’expertise comptable",
+          en: "Senior Accountant, Accounting & Audit Firm"
+        },
+        description: {
+          ar: "العمل بمكتب محافظ الحسابات بشير العزار خليفة بغليزان (التدقيق، تصفية الحسابات، مسك المحاسبة، وتسيير الموظفين).",
+          fr: "Poste occupé au Cabinet BACHIR ELEZAAR Khélifa (Relizane): Audit, Assainissement des Comptes, Tenue de Comptabilité, Gestion du Personnel.",
+          en: "Position held at the Bachir Elezaar Khelifa Firm (Relizane): Auditing, account cleanup, bookkeeping, and personnel management."
+        }
+      },
+      {
+        year: "2006 - 2007",
+        title: {
+          ar: "رئيس قسم المحاسبة - المديرية الجهوية للشركة الجزائرية للتأمينات (SAA)",
+          fr: "Chef de Section Comptabilité, Direction Régionale SAA",
+          en: "Accounting Section Head, SAA Regional Directorate"
+        },
+        description: {
+          ar: "رئيس قسم المحاسبة على مستوى وحدة غليزان التابعة للشركة الجزائرية للتأمينات (SAA).",
+          fr: "Chef de Section Comptabilité au niveau de la Direction Régionale de la SAA, Unité de Relizane.",
+          en: "Head of the Accounting Section at the SAA Regional Directorate, Relizane Unit."
+        }
+      }
     ]
-  },
-  {
-    id: "p2",
-    name: {
-      ar: "سارة حداد",
-      fr: "Sarah Haddad",
-      en: "Sarah Haddad"
-    },
-    initials: "SH",
-    avatarBg: "bg-indigo-700 text-white",
-    specialty: "tax-consultant",
-    wilayaId: 31,
-    wilayaName: { ar: "وهران", fr: "Oran", en: "Oran" },
-    rating: 4.8,
-    reviewCount: 22,
-    hourlyRate: 5500,
-    available: true,
-    yearsExperience: 9,
-    accreditationNumber: "DGI/CF/31-229",
-    completionRate: 95,
-    clientsServed: 74,
-    bio: {
-      ar: "مستشارة جبائية متخصصة في التشريعات الجبائية الجزائرية والجمارك والمنازعات في الغرب الجزائري. أساعد الشركات في تقليل الأخطاء الجبائية وإجراء عمليات التدقيق الوقائي.",
-      fr: "Conseillère fiscale spécialisée en droit fiscal algérien, douanes et contentieux dans l'Ouest algérien. J'aide les entreprises à minimiser les risques fiscaux par des audits préventifs.",
-      en: "Tax Consultant specializing in Algerian tax law, customs, and litigation in Western Algeria. I help businesses minimize tax risks through preventative audits."
-    },
-    services: [
-      {
-        title: { ar: "التدقيق الجبائي والوقاية من المخاطر", fr: "Audit fiscal préventif", en: "Preventative tax audit" },
-        description: { ar: "مراجعة ملفات السنوات السابقة للتأكد من خلوها من الأخطاء التي قد تسبب غرامات مالية عند المراقبة الجبائية.", fr: "Revue complète des comptes passés pour prévenir les redressements lors d'un contrôle fiscal.", en: "Thorough review of past records to prevent adjustments during a tax audit." },
-        price: "90,000 DZD"
-      },
-      {
-        title: { ar: "حل منازعات الضرائب والاعتراضات", fr: "Gestion des contentieux et recours", en: "Tax litigation & formal appeals" },
-        description: { ar: "صياغة المذكرات الجوابية والطعون أمام اللجان الولائية والمركزية للضرائب.", fr: "Rédaction des recours et défense devant les commissions locales et centrales des impôts.", en: "Drafting appeals and defense before local and central tax commissions." },
-        price: "70,000 DZD"
-      }
-    ],
-    reviews: [
-      {
-        id: "r2_1",
-        clientName: "Brahim S.",
-        rating: 4.8,
-        comment: {
-          ar: "الاستفادة من مهاراتها الجبائية خفضت غرامات المراقبة بنسبة 70%. ذكاء واحترافية عالية.",
-          fr: "Son intervention a réduit notre redressement fiscal de 70%. Une expertise hors pair.",
-          en: "Her intervention reduced our tax audit adjustment by 70%. An unparalleled expertise."
-        },
-        date: "2026-04-20"
-      },
-      {
-        id: "r2_2",
-        clientName: "Nadia T.",
-        rating: 5,
-        comment: {
-          ar: "متخصصة في القانون الجزائري ومخلصة جداً في عملها. التواصل كان ممتازاً بكلا اللغتين.",
-          fr: "Experte en loi algérienne et très dévouée. Excellente communication en arabe et français.",
-          en: "Expert in Algerian law and very dedicated. Excellent communication in both Arabic and French."
-        },
-        date: "2026-03-10"
-      },
-      {
-        id: "r2_3",
-        clientName: "Halim G.",
-        rating: 4.6,
-        comment: {
-          ar: "قامت بمراجعة الكشوفات الشهرية وأرشدتنا لنظام جبائي أنسب لشركتنا للاستيراد والتصدير.",
-          fr: "A examiné nos déclarations mensuelles et nous a orienté vers un régime plus avantageux.",
-          en: "Reviewed our monthly filings and guided us to a more advantageous import/export tax regime."
-        },
-        date: "2026-01-29"
-      }
-    ],
-    history: [
-      { year: "2021 - Present", title: { ar: "مؤسسة مكتب حداد للاستشارات الجبائية", fr: "Fondatrice, Haddad Tax Consulting", en: "Founder, Haddad Tax Consulting" }, description: { ar: "تقديم خدمات استشارية متكاملة لشركات القطاع السياحي والصناعي بوهارن.", fr: "Services de conseil aux secteurs touristiques et industriels d'Oran.", en: "Consulting services for tourism and industrial sectors in Oran." } },
-      { year: "2017 - 2021", title: { ar: "مفتشة ضرائب سابقة، مديرية الضرائب بوهران", fr: "Ancienne Inspectrice, Direction des Impôts d'Oran", en: "Former Tax Inspector, Oran Tax Directorate" }, description: { ar: "مراقبة الشركات التجارية الكبرى وإدارة النزاعات الجبائية.", fr: "Contrôle des grandes entreprises et gestion des contentieux.", en: "Auditing large corporations and managing tax litigations." } }
-    ]
-  },
-  {
-    id: "p3",
-    name: {
-      ar: "كريم بوقرة",
-      fr: "Karim Bouguerra",
-      en: "Karim Bouguerra"
-    },
-    initials: "KB",
-    avatarBg: "bg-blue-800 text-white",
-    specialty: "statutory-auditor",
-    wilayaId: 25,
-    wilayaName: { ar: "قسنطينة", fr: "Constantine", en: "Constantine" },
-    rating: 4.7,
-    reviewCount: 15,
-    hourlyRate: 7000,
-    available: false,
-    yearsExperience: 16,
-    accreditationNumber: "CNCC/2010/431",
-    completionRate: 100,
-    clientsServed: 82,
-    bio: {
-      ar: "محافظ حسابات معتمد لدى الاتحاد الوطني للمحاسبين. متخصص في تدقيق الحسابات القانوني للشركات المساهمة والمجموعات الاقتصادية الكبرى بقرون الذهب الشرقية والامتثال المالي المتقدم.",
-      fr: "Commissaire aux comptes agréé. Spécialisé dans l'audit légal des sociétés par actions et grands groupes dans l'Est algérien. Expert en conformité financière et IFRS.",
-      en: "Accredited Statutory Auditor. Specialized in the statutory audit of corporations and large groups in Eastern Algeria. Expert in financial compliance and IFRS."
-    },
-    services: [
-      {
-        title: { ar: "التدقيق المالي القانوني (محافظة الحسابات)", fr: "Commissariat aux comptes (Audit légal)", en: "Statutory auditing & legal audit" },
-        description: { ar: "المصادقة القانونية على الحسابات السنوية وإعداد تقرير محافظة الحسابات العام والخاص للشركاء.", fr: "Certification réglementaire des états financiers et rédaction des rapports généraux et spéciaux.", en: "Regulatory certification of financial statements and drafting of general and special reports." },
-        price: "200,000 DZD"
-      },
-      {
-        title: { ar: "صياغة أنظمة الرقابة الداخلية للشركات", fr: "Mise en place de procédures de contrôle interne", en: "Internal control system implementation" },
-        description: { ar: "تقييم وتأسيس هيكل رقابي يمنع حدوث ثغرات مالية أو تسريبات نقدية داخل المؤسسات.", fr: "Évaluation et implémentation de processus de contrôle pour réduire les risques opérationnels.", en: "Evaluation and implementation of control processes to reduce operational risks." },
-        price: "110,000 DZD"
-      }
-    ],
-    reviews: [
-      {
-        id: "r3_1",
-        clientName: "Fawzi H.",
-        rating: 5,
-        comment: {
-          ar: "محافظ حسابات رائع ودقيق جداً. كشف لنا العديد من مواطن الضعف في الرقابة الداخلية لمصنعنا وقدم حلولاً عملية لها.",
-          fr: "Excellent commissaire, rigoureux. Il a détecté des failles de contrôle interne majeures dans notre usine.",
-          en: "Excellent and rigorous auditor. He detected major internal control flaws in our factory and gave clear solutions."
-        },
-        date: "2026-05-01"
-      },
-      {
-        id: "r3_2",
-        clientName: "Lamine R.",
-        rating: 4.5,
-        comment: {
-          ar: "عمل احترافي منظم والالتزام بالمواعيد ممتاز. التقارير المقدمة كانت ذات قيمة عالية جداً لمجلس الإدارة.",
-          fr: "Travail très structuré et respect des délais. Les rapports remis ont une grande valeur pour le conseil.",
-          en: "Very structured work and respect of deadlines. The reports delivered had great value for the board."
-        },
-        date: "2026-03-24"
-      },
-      {
-        id: "r3_3",
-        clientName: "Smail P.",
-        rating: 4.6,
-        comment: {
-          ar: "ساعد في دمج شركتين عائليتين وقياس الأصول بدقة لضمان توازن الحصص.",
-          fr: "A facilité la fusion de nos deux filiales familiales avec une évaluation d'actifs ultra-précise.",
-          en: "Facilitated the merger of our two family subsidiaries with an ultra-precise asset valuation."
-        },
-        date: "2026-02-10"
-      }
-    ],
-    history: [
-      { year: "2010 - Present", title: { ar: "محافظ حسابات مستقل، مكتب بوقرة للتدقيق", fr: "Commissaire aux Comptes Indépendant", en: "Independent Statutory Auditor, Bouguerra Audit" }, description: { ar: "مراجعة واعتماد الحسابات لأكثر من 40 شركة مساهمة كبرى في قسنطينة وسطيف.", fr: "Audit et certification des comptes de 40 grandes sociétés à Constantine et Sétif.", en: "Audit and certification of accounts for 40 large companies in Constantine and Sétif." } }
-    ]
-  },
-  {
-    id: "p4",
-    name: {
-      ar: "ليلى يعقوبي",
-      fr: "Layla Yakoubi",
-      en: "Layla Yakoubi"
-    },
-    initials: "LY",
-    avatarBg: "bg-emerald-700 text-white",
-    specialty: "chartered-accountant",
-    wilayaId: 15,
-    wilayaName: { ar: "تيزي وزو", fr: "Tizi Ouzou", en: "Tizi Ouzou" },
-    rating: 4.9,
-    reviewCount: 30,
-    hourlyRate: 4800,
-    available: true,
-    yearsExperience: 10,
-    accreditationNumber: "CNEC/2016/1022",
-    completionRate: 97,
-    clientsServed: 95,
-    bio: {
-      ar: "محاسبة معتمدة بخبرة واسعة ومتميزة في مساعدة المؤسسات الفلاحية والتعاونيات والإنتاج المحلي بمنطقة تيزي وزو والبويرة ومومرداس. نخدمكم بالذكاء والشفافية التامة.",
-      fr: "Comptable agréée spécialisée dans l'accompagnement des coopératives agricoles, PME et producteurs locaux en Kabylie (Tizi Ouzou, Bouira). Transparence et rigueur garanties.",
-      en: "Accredited Accountant specializing in supporting agricultural cooperatives, SMEs, and local producers in Kabylie (Tizi Ouzou, Bouira). Guaranteed transparency and rigor."
-    },
-    services: [
-      {
-        title: { ar: "تأسيس ومرافقة التعاونيات والمؤسسات", fr: "Création et suivi de coopératives et PME", en: "Creation and follow-up of cooperatives" },
-        description: { ar: "صياغة النظم الأساسية والامتيازات الجبائية والتعامل مع الغرف الفلاحية والتجارية لتسهيل الانطلاق.", fr: "Rédaction des statuts, démarches d'avantages fiscaux et d'accords avec les chambres d'agriculture.", en: "Drafting of bylaws, tax benefit processes, and agreements with chambers of agriculture." },
-        price: "50,000 DZD"
-      },
-      {
-        title: { ar: "متابعة الضمان الاجتماعي وشؤون العمال", fr: "Gestion de paie, CNAS et déclarations sociales", en: "Payroll, CNAS and social declarations" },
-        description: { ar: "إعداد كشوف الرواتب الشهرية والاشتراكات للضمان الاجتماعي للعمال والمدراء (CNAS / CASNOS) بدقة.", fr: "Établissement des fiches de paie, DAS annuelle et déclarations d'impôt sur le revenu (IRG).", en: "Preparation of monthly payslips, annual DAS, and personal income tax (IRG) declarations." },
-        price: "25,000 DZD / Month"
-      }
-    ],
-    reviews: [
-      {
-        id: "r4_1",
-        clientName: "Malek O.",
-        rating: 5,
-        comment: {
-          ar: "الخدمة ممتازة ومثالية جداً. الآنسة ليلى على دراية مذهلة بكل القوانين والمنح والتسهيلات الممنوحة للمجال الفلاحي.",
-          fr: "Service impécable. Mlle Yakoubi est très calée sur les subventions et exonérations spécifiques à l'agriculture.",
-          en: "Impecable service. Ms. Yakoubi is very knowledgeable on agricultural grants and tax benefits."
-        },
-        date: "2026-04-18"
-      },
-      {
-        id: "r4_2",
-        clientName: "Zohra T.",
-        rating: 4.8,
-        comment: {
-          ar: "تسير شؤون عمالنا بانتظام تام. لم نعد نعاني من أي عقوبات أو غرامات ضياع مواعيد التصريحات.",
-          fr: "Gère les salaires de nos 25 employés à la perfection. Plus aucun retard de déclaration CNAS !",
-          en: "Manages the salaries of our 25 employees perfectly. No more CNAS filing or payment delays!"
-        },
-        date: "2026-03-30"
-      },
-      {
-        id: "r4_3",
-        clientName: "Karim M.",
-        rating: 5,
-        comment: {
-          ar: "إنسانة في قمة الأخلاق والصدق والعمل بضمير حي. وفرت لنا الكثير من المجهود والوقت المفقود.",
-          fr: "Une femme travailleuse, honnête et compétente. Nous avons épargné des sommes folles d'administration.",
-          en: "An honest, hardworking, and highly competent woman. Saved us so much time and public administration overhead."
-        },
-        date: "2026-02-14"
-      }
-    ],
-    history: [
-      { year: "2016 - Present", title: { ar: "مديرة، مكتب يعقوبي للخدمات المحاسبية", fr: "Directrice, Cabinet Yakoubi Comptabilité", en: "Director, Yakoubi Accounting Cabinet" }, description: { ar: "الشريك الأول للمربين والمنتجين والشركات الخدمية في ولاية تيزي وزو.", fr: "Partenaire de premier plan pour les éleveurs, producteurs et PME de Tizi Ouzou.", en: "Leading partner for breeders, producers, and service companies in Tizi Ouzou." } }
-    ]
-  },
-  {
-    id: "p5",
-    name: {
-      ar: "عبد السلام حميدي",
-      fr: "Abdessalam Hamidi",
-      en: "Abdessalam Hamidi"
-    },
-    initials: "AH",
-    avatarBg: "bg-amber-800 text-white",
-    specialty: "judicial-expert",
-    wilayaId: 19,
-    wilayaName: { ar: "سطيف", fr: "Sétif", en: "Sétif" },
-    rating: 4.6,
-    reviewCount: 19,
-    hourlyRate: 8000,
-    available: true,
-    yearsExperience: 22,
-    accreditationNumber: "MJ/EX-2004/79",
-    completionRate: 94,
-    clientsServed: 110,
-    bio: {
-      ar: "مهني قضائي معتمد ومحكم حسابات لدى المحاكم والمجالس القضائية الجزائرية. خبرة تمتد لأكثر من عشرين سنة في تقييم الأضرار، تفكيك الشراكات، وتوريث المؤسسات العائلية الكبرى.",
-      fr: "Expert judiciaire agréé près les Cours et Tribunaux algériens. Plus de 22 ans d'expérience dans l'évaluation des préjudices, la liquidation d'entreprises et le règlement des successions complexes.",
-      en: "Accredited Judicial Expert registered with Algerian Courts. Over 22 years of experience in damages valuation, corporate liquidations, and complex business succession inheritance disputes."
-    },
-    services: [
-      {
-        title: { ar: "الخبرة القضائية وحل النزاعات المالية", fr: "Expertises judiciaires et arbitrages financiers", en: "Judicial auditing & financial arbitration" },
-        description: { ar: "مراجعة القيود المحاسبية محل الخلاف وصياغة تقرير الخبرة لتقديمه للمحاكم لحسم النزاع.", fr: "Analyse comptable des litiges commerciaux et rédaction des rapports d'expertise pour les tribunaux.", en: "Accounting analysis of business disputes and drafting expert witness reports for tribunals." },
-        price: "150,000 DZD"
-      },
-      {
-        title: { ar: "تدقيق الحصص وتصفية الشركات", fr: "Évaluation d'actifs et liquidation de sociétés", en: "Asset valuation & company liquidation" },
-        description: { ar: "تصفية الأصول والخصوم وسداد الدائنين وتوزيع ناتج التصفية بين الشركاء بالعدل والقانون.", fr: "Audit contractuel et liquidation amiable ou judiciaire de sociétés avec partage équitable des comptes.", en: "Contractual audit and voluntary or judicial liquidation with fair capital sharing." },
-        price: "130,000 DZD"
-      }
-    ],
-    reviews: [
-      {
-        id: "r5_1",
-        clientName: "Othmane L.",
-        rating: 5,
-        comment: {
-          ar: "الخبرة القضائية التي قام بها كانت حاسمة في استرجاع حقوقنا المسلوبة في الشركة العائلية. جزيل الشكر والتقدير.",
-          fr: "Son rapport d'expertise a été la clé pour récupérer nos droits dans la société familiale.",
-          en: "His expert report was the absolute key to recovering our rights in the familial corporation."
-        },
-        date: "2026-04-10"
-      },
-      {
-        id: "r5_2",
-        clientName: "Salem B.",
-        rating: 4.5,
-        comment: {
-          ar: "مهني في غاية النزاهة والحكمة. أدار النقاش والوصول للتسوية بروية واحترام كبير للطرفين.",
-          fr: "Arbitre intègre et sage. Il a conduit l'arbitrage avec équité et respect envers les parties.",
-          en: "Honest and wise arbitrator. He headed the dispute resolution with fairness and absolute respect."
-        },
-        date: "2026-03-02"
-      }
-    ],
-    history: [
-      { year: "2004 - Present", title: { ar: "مهني قضائي معتمد لدى مجلس قضاء سطيف", fr: "Expert Judiciaire Agréé, Cour de Sétif", en: "Accredited Judicial Expert, Court of Setif" }, description: { ar: "تكليف في أكثر من 180 قضية تجارية ومالية معقدة.", fr: "Désigné par la justice sur plus de 180 affaires commerciales complexes.", en: "Appointed by courts on more than 180 complex commercial disputes." } }
-    ]
-  },
-  {
-    id: "p6",
-    name: {
-      ar: "حمزة بن زايد",
-      fr: "Hamza Benzaid",
-      en: "Hamza Benzaid"
-    },
-    initials: "HZ",
-    avatarBg: "bg-sky-800 text-white",
-    specialty: "certified-accountant",
-    wilayaId: 16,
-    wilayaName: { ar: "الجزائر", fr: "Alger", en: "Algiers" },
-    rating: 4.8,
-    reviewCount: 26,
-    hourlyRate: 5000,
-    available: true,
-    yearsExperience: 8,
-    accreditationNumber: "CNEC/2018/1410",
-    completionRate: 98,
-    clientsServed: 63,
-    bio: {
-      ar: "مهني محاسب معتمد في الجزائر العاصمة، رائد في رقمنة الأنظمة المحاسبية. نسعى لتطوير نظام الشركات الجزائرية عبر دمج التكنولوجيا المتطورة والسحابة مع الكفاءة المحلية.",
-      fr: "Comptable agréé basé à Alger, pionnier de la numérisation des systèmes d'information comptables. Nous intégrons les outils cloud avec l'expertise locale.",
-      en: "Accredited Accountant in Algiers, pioneer in local cloud accounting. We optimize financial systems by merging state-of-the-art tech tools with local Algerian rules."
-    },
-    services: [
-      {
-        title: { ar: "التحول الرقمي وتثبيت البرامج المحاسبية", fr: "Transition numérique et intégration de logiciels ERP", en: "Digital transition & ERP cloud integration" },
-        description: { ar: "تثبيت وضبط برامج ERP السحابية وتدريب الفريق الإداري لشركتكم لضمان الكفاءة والشفافية.", fr: "Implémentation de l'ERP Odoo/Sage et formation de vos équipes sur la gestion commerciale et comptable.", en: "Implementation of cloud ERP solutions like Odoo and Sage, training teams on digital transactions." },
-        price: "150,000 DZD"
-      }
-    ],
-    reviews: [
-      {
-        id: "r6_1",
-        clientName: "Merouane K.",
-        rating: 5,
-        comment: {
-          ar: "بفضل سفيان وحمزة انتقلت شركتنا الكهروميكانيكية لنظام فوترة سحابي متطور مريح ومحمي.",
-          fr: "Grâce à Hamza, notre PME a migré sur un système de facturation digitalisé et ultra-rapide.",
-          en: "Thanks to Hamza, our SMB successfully migrated to an ultra-fast digital cloud invoicing system."
-        },
-        date: "2026-05-15"
-      }
-    ],
-    history: []
-  },
-  {
-    id: "p7",
-    name: {
-      ar: "مراد يعمران",
-      fr: "Mourad Yamrane",
-      en: "Mourad Yamrane"
-    },
-    initials: "MY",
-    avatarBg: "bg-red-800 text-white",
-    specialty: "certified-accountant",
-    wilayaId: 6,
-    wilayaName: { ar: "بجاية", fr: "Béjaïa", en: "Béjaïa" },
-    rating: 4.5,
-    reviewCount: 12,
-    hourlyRate: 4000,
-    available: true,
-    yearsExperience: 7,
-    accreditationNumber: "CNEC/2019/1512",
-    completionRate: 90,
-    clientsServed: 40,
-    bio: {
-      ar: "محاسب معتمد نشط جداً في الصومام وبجاية. متخصص في محاسبة شركات التوزيع والتجارة بالتجزئة، استرداد القيمة المضافة ومسك الدفاتر المالية القانونية.",
-      fr: "Comptable agréé de Béjaïa et de la vallée de la Soumman. Spécialisé dans le commerce de gros, les remboursements de TVA et le secrétariat juridique.",
-      en: "Accredited Accountant in Bejaia & Soummam. Specialized in retail, wholesale distributing, VAT claims, refund audits, and corporate legal filing."
-    },
-    services: [
-      {
-        title: { ar: "متابعة واسترداد القيمة المضافة (TVA)", fr: "Demande de remboursement de TVA active", en: "In-depth VAT claims & refunds" },
-        description: { ar: "تأسيس ملف المطابقة والامتثال القانوني ومتابعة مصالح الضرائب لاسترداد المبالغ المالية المستحقة.", fr: "Préparation des dossiers d'exonération ou de récupération de la TVA grevant les investissements.", en: "Preparation of VAT exemption or refund files on capital investment for businesses." },
-        price: "40,000 DZD"
-      }
-    ],
-    reviews: [],
-    history: []
-  },
-  {
-    id: "p8",
-    name: {
-      ar: "فتيحة بوزيدي",
-      fr: "Fatiha Bouzidi",
-      en: "Fatiha Bouzidi"
-    },
-    initials: "FB",
-    avatarBg: "bg-pink-800 text-white",
-    specialty: "tax-consultant",
-    wilayaId: 9,
-    wilayaName: { ar: "البليدة", fr: "Blida", en: "Blida" },
-    rating: 4.7,
-    reviewCount: 16,
-    hourlyRate: 4500,
-    available: false,
-    yearsExperience: 11,
-    accreditationNumber: "DGI/CF/09-112",
-    completionRate: 96,
-    clientsServed: 58,
-    bio: {
-      ar: "مستشارة مهنية في الضرائب بمدينة البليدة ومحيط المتيجة. أساعد المصانع وشركات الأغذية والتحويل الزراعي في مطابقة اللوائح الجبائية الجديدة في قوانين المالية السنوية.",
-      fr: "Consultante fiscale à Blida. J'oriente les industries agroalimentaires et manufacturières de la Mitidja face aux fréquents changements des lois de finances.",
-      en: "Tax Consultant based in Blida. I help food-processing and manufacturing businesses in Mitidja navigate the frequent updates in annually voted Algerian Finance Acts."
-    },
-    services: [
-      {
-        title: { ar: "الامتثال والتخطيط السنوي لقوانين المالية", fr: "Planification fiscale Loi de Finances", en: "Annual Finance Act compliance planning" },
-        description: { ar: "تحليل معمق للأحكام الجبائية المستحدثة وتجنب تطبيق المعدلات العقابية أو الغرامات المفاجئة.", fr: "Analyse sur-mesure de la nouvelle Loi de Finances pour anticiper les impacts et restructurer au mieux.", en: "Bespoke analysis of the new annual Finance Act to mitigate tax risks and design optimal solutions." },
-        price: "60,000 DZD"
-      }
-    ],
-    reviews: [],
-    history: []
   }
 ];
 
 export const clients: Client[] = [
   {
     id: "c1",
-    companyName: "Dzair Tech Link",
+    companyName: "Lubroil",
     sector: { ar: "تكنولوجيا المعلومات والبرمجيات", fr: "Technologies de l'information", en: "Information Technology" },
     wilayaId: 16,
-    wilayaName: { ar: "الجزائر", fr: "Alger", en: "Algiers" },
-    logoInitials: "DT",
+    wilayaName: { ar: "غليزان", fr: "Relizane", en: "Relizan" },
+    logoInitials: "LO",
     avatarBg: "bg-slate-700 text-white",
     NIF: "001816091223455",
     RC: "16/00-109432B18",
@@ -729,7 +399,7 @@ export const contracts: Contract[] = [
     status: "active",
     startDate: "2026-01-01",
     endDate: "2026-12-31",
-    value: 420000,
+    value: 0,
     scopeDescription: {
       ar: "مسك الحسابات اليومية بالبرمجية السحابية وتعبئة استمارات G50 ونماذج الضرائب والضمان الاجتماعي وصياغة الميزانية السنوية ومذكرة المبيعات المعفاة.",
       fr: "Gestion de la comptabilité courante, déclarations G50 mensuelles, déclarations DAS et CNAS/CASNOS, établissement et dépôt de la liasse fiscale de clôture.",
@@ -766,22 +436,7 @@ export const contracts: Contract[] = [
       en: "Full legal audit, physical warehouse inventory checks, and formal certification of financial syntheses for a pharma distribution LLC."
     }
   },
-  {
-    id: "ct4",
-    professionalId: "p2",
-    clientId: "c1",
-    title: { ar: "الاعتراض الجبائي ضد المراقبة والتحقق", fr: "Assistance Procédure de Vérification Fiscale", en: "Tax Audit Defense and Formal Administrative Appeals" },
-    status: "pending",
-    startDate: "2026-05-10",
-    endDate: "2026-09-10",
-    value: 250000,
-    scopeDescription: {
-      ar: "دراسة تقرير المفتشية وصياغة ردود الطعون الإدارية والتمثيل أمام لجان الطعن الولائية للحد من العبء الجبائي المفاجئ.",
-      fr: "Revue des pièces justificatives, rédaction du mémoire de défense après fardeau fiscal et soutien actif de l'entreprise face aux inspecteurs.",
-      en: "Reviewing company invoices, drafting administrative protest briefs after a tax assessment, and active delegation before the local tax panels."
-    }
-  },
-  {
+   {
     id: "ct5",
     professionalId: "p2",
     clientId: "c4",

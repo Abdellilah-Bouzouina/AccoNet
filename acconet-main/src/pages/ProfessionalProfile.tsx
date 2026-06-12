@@ -339,15 +339,6 @@ export const ProfessionalProfile: React.FC = () => {
         <div className="lg:col-span-4 sticky top-20 space-y-6">
           <div className="bg-white border border-blue-100 rounded-xl p-6 shadow-classic space-y-5 text-center">
             
-            <div className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">REFERENCE BRACKET PRICING</div>
-            
-            <div className="space-y-1">
-              <span className="text-3xl font-serif font-black text-brand-primary font-mono">
-                {pro.hourlyRate.toLocaleString()} DZD
-              </span>
-              <p className="text-xs text-slate-400 font-mono uppercase">{t('perHour')}</p>
-            </div>
-
             <div className="p-3 bg-white border border-blue-100 text-xs text-slate-300 leading-relaxed font-sans text-left rtl:text-right">
               💡 {t('contactToDiscuss')}
             </div>

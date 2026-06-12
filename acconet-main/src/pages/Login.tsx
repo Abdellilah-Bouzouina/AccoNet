@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useApp } from '../context/AppContext';
 import { 
   Lock, Mail, ArrowLeft, ArrowRight, ShieldCheck, 
-  Building2, UserCheck, HelpCircle, Eye, EyeOff, KeyRound
+  Building2, UserCheck, Eye, EyeOff, KeyRound
 } from 'lucide-react';
 import { clients, professionals } from '../data/mockData';
 
@@ -83,55 +83,42 @@ export const Login: React.FC = () => {
     navigate('/dashboard/professional');
   };
 
-  const handleSimulateAdminLogin = () => {
-    setEmail('admin@acconet.dz');
-    setPassword('password123');
-    setUserRole('admin');
-    triggerNotification(
-      t('authSuccessHeading'),
-      "Logged in as Admin: DGI National Controller"
-    );
-    navigate('/dashboard/admin');
-  };
-
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-stretch" id="login_viewport_split">
       
       {/* LEFT SIDEBAR PANEL: POLISHED BRAND BACKGROUND */}
-      <div className="hidden lg:flex lg:w-1/2 bg-brand-primary text-white p-16 flex-col justify-between relative overflow-hidden border-r border-blue-500/30">
-        
-        {/* Architectural background lines */}
-        <div className="absolute inset-0 opacity-20 pointer-events-none">
-          <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(to_right,rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:3rem_3rem]"></div>
-        </div>
+<div className="hidden lg:flex lg:w-1/2 bg-brand-primary text-white p-16 flex-col justify-between relative overflow-hidden border-r border-blue-500/30">
+  
+  {/* Architectural background lines */}
+  <div className="absolute inset-0 opacity-20 pointer-events-none">
+    <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(to_right,rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:3rem_3rem]"></div>
+  </div>
 
-        <div className="space-y-1 relative z-10 text-left">
-          <Link to="/" className="flex items-center space-x-2.5 rtl:space-x-reverse">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary font-bold text-lg border border-brand-primary/20">
-              أ
-            </span>
-            <span className="text-xl font-serif font-semibold tracking-tight text-slate-900">
-              AccoNet <span className="text-brand-primary">أكونيت</span>
-            </span>
-          </Link>
-          <p className="text-[9px] text-slate-400 font-mono tracking-widest uppercase mt-2">{t('nationalGateway')}</p>
-        </div>
+  <div className="space-y-1 relative z-10 text-left">
+    <Link to="/" className="flex items-center space-x-2.5 rtl:space-x-reverse">
+      <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary font-bold text-lg border border-brand-primary/20">
+        أ
+      </span>
+      <span className="text-xl font-serif font-semibold tracking-tight text-slate-900">
+        AccoNet <span className="text-brand-primary">أكونيت</span>
+      </span>
+    </Link>
+    <p className="text-[9px] text-slate-400 font-mono tracking-widest uppercase mt-2">{t('nationalGateway')}</p>
+  </div>
 
-        <div className="space-y-4 relative z-10 text-left">
-          <h2 className="text-3xl font-serif font-bold leading-tight">
-            {t('loginHeroTitle')}
-          </h2>
-          <p className="text-slate-400 text-xs leading-relaxed max-w-sm font-sans">
-            {t('loginHeroSub')}
-          </p>
-        </div>
+  {/* Removed the sub-headline paragraph tag from this container */}
+  <div className="space-y-4 relative z-10 text-left">
+    <h2 className="text-3xl font-serif font-bold leading-tight">
+      {t('loginHeroTitle')}
+    </h2>
+  </div>
 
-        <div className="text-xs text-slate-500 flex items-center gap-2 relative z-10 font-mono">
-          <ShieldCheck className="w-5 h-5 text-brand-primary shrink-0" />
-          <span>{t('onccRegistered')}</span>
-        </div>
+  <div className="text-xs text-slate-500 flex items-center gap-2 relative z-10 font-mono">
+    <ShieldCheck className="w-5 h-5 text-brand-primary shrink-0" />
+    <span>{t('onccRegistered')}</span>
+  </div>
 
-      </div>
+</div>
 
       {/* RIGHT PANEL: MAIN FORM & QUICK LOGINS */}
       <div className="w-full lg:w-1/2 bg-white flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-20 border-l border-blue-100">
@@ -219,7 +206,7 @@ export const Login: React.FC = () => {
               {t('simulationTerminals')}
             </h3>
             
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               
               <button
                 type="button"
@@ -251,23 +238,6 @@ export const Login: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-[9px] text-indigo-400 font-mono truncate">accountant@acconet.dz</p>
-                  <p className="text-[8px] text-slate-500 font-mono">Pass: password123</p>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleSimulateAdminLogin}
-                className="p-2.5 bg-blue-50 border border-blue-200 rounded-lg hover:border-brand-primary text-left rtl:text-right cursor-pointer transition flex flex-col justify-between h-24 hover:border-brand-primary/30"
-                id="login_demo_admin_btn"
-                title="Email: admin@acconet.dz | Pass: password123"
-              >
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-amber-500 shrink-0" />
-                  <p className="text-[10px] font-bold text-slate-900 font-serif leading-none">{t('platformAdminLabel')}</p>
-                </div>
-                <div>
-                  <p className="text-[9px] text-amber-500 font-mono truncate">admin@acconet.dz</p>
                   <p className="text-[8px] text-slate-500 font-mono">Pass: password123</p>
                 </div>
               </button>

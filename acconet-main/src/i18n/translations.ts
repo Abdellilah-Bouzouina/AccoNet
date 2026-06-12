@@ -89,7 +89,7 @@ export const translations: TranslationDictionary = {
 
   // Landing Page Hero
   heroTitle: {
-    ar: "جد أفضل المهنيين من مجال المحاسبة في الجزائر",
+    ar: "أوجد أفضل المهنيين من مجال المحاسبة في الجزائر",
     fr: "Trouvez le meilleur partenaire comptable & fiscal pour votre entreprise en Algérie",
     en: "Find the Best Accounting & Tax Partners for Your Business in Algeria"
   },
@@ -633,16 +633,11 @@ export const translations: TranslationDictionary = {
     en: "National Gateway Platform"
   },
   loginHeroTitle: {
-    ar: "ربط الشركات بأفضل القادة الماليين المعتمدين في الجزائر.",
-    fr: "Connecter les entreprises aux meilleurs leaders financiers en Algérie.",
-    en: "Connecting companies with authorized financial leaders across Algerian territory."
+    ar: "ربط الشركات بأفضل المهنيين المعتمدين في الجزائر.",
+    fr: "Connecter les entreprises aux meilleurs professionels en Algérie.",
+    en: "Connecting companies with authorized professionals across Algerian territory."
   },
-  loginHeroSub: {
-    ar: "إدارة سهلة لضريبة القيمة المضافة، التصريحات التجارية، والبيانات المالية عبر لوحة تحكم تفاعلية.",
-    fr: "Gérez facilement la TVA, les déclarations et les états financiers via un tableau de bord interactif.",
-    en: "Easily manage quarterly VAT, trade declarations, social CNAS audits, and financial statements directly via an interactive trilingual dashboard."
-  },
-  onccRegistered: {
+    onccRegistered: {
     ar: "إطار تنظيمي معتمد من المنظمة الوطنية (ONCC)",
     fr: "CADRE RÉGLEMENTAIRE AGRÉÉ PAR L'ONCC",
     en: "ONCC REGISTERED AUDITING REGULATION FRAMEWORK"
@@ -794,12 +789,7 @@ export const translations: TranslationDictionary = {
     fr: "Recherche de Partenaire Judiciaire / Fiscal / Comptable",
     en: "Search for Judicial / Fiscal / Accounting Partner"
   },
-  searchPlaceholderInput: {
-    ar: "مثال : G50 ، ميزانية SCF...",
-    fr: "ex : G50, bilan SCF, liasse fiscale...",
-    en: "ex: G50, SCF balance sheet, fiscal return..."
-  },
-  searchBtnText: {
+    searchBtnText: {
     ar: "ابحث",
     fr: "Rechercher",
     en: "Search"

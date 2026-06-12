@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { 
   Sparkles, FileText, Database, ShieldAlert, Cpu,
-  ChevronDown, ChevronUp, Play, Info, RefreshCw 
+  ChevronDown, ChevronUp, Play, Info, RefreshCw
 } from 'lucide-react';
 
-// 1. Localized data dictionary for the default interactive sandbox values
 const mockInputData = {
   rawEntryText: {
     en: 'Purchase of raw materials worth 10,000 DZD on account. Value-added tax: 19%',
@@ -25,31 +24,33 @@ const mockInputData = {
 };
 
 export const Tools: React.FC = () => {
-  // 2. Added 'language' extraction from your context hook
   const { language, t, tObj } = useLanguage(); 
   const currentLang = (language === 'fr' || language === 'ar') ? language : 'en';
 
-  // Selected tool index state
   const [expandedTool, setExpandedTool] = useState<number | null>(0);
-
-  // Simulation outputs
   const [isProcessing, setIsProcessing] = useState(false);
   const [simulationResult, setSimulationResult] = useState<string | null>(null);
 
-  // Inputs initialized cleanly using our localized dictionary
   const [rawEntryText, setRawEntryText] = useState(mockInputData.rawEntryText[currentLang]);
   const [selectedMockPdf, setSelectedMockPdf] = useState('invoice_or_0982.pdf');
-  const [monthlySales, setMonthlySales] = useState('4,500,000');
+  
+  // --- مدخلات الأداة الثالثة (تصريح G50 التفاعلي) ---
+  const [companyName, setCompanyName] = useState('Sarl El Nadjah');
+  const [nifNumber, setNifNumber] = useState('002116090123456');
+  const [sales19, setSales19] = useState('3,000,000'); 
+  const [sales9, setSales9] = useState('500,000');    
   const [monthlyStaffPayroll, setMonthlyStaffPayroll] = useState('1,200,000');
+  const [hasTapExemption, setHasTapExemption] = useState<boolean>(false);
+  // -----------------------------------------------------
+
   const [rawBalanceState, setRawBalanceState] = useState(mockInputData.rawBalanceState[currentLang]);
   const [smeForecastText, setSmeForecastText] = useState(mockInputData.smeForecastText[currentLang]);
 
-  // 3. CRITICAL EFFECT: Re-populate fields and clear old simulator run text when language updates
   useEffect(() => {
     setRawEntryText(mockInputData.rawEntryText[currentLang]);
     setRawBalanceState(mockInputData.rawBalanceState[currentLang]);
     setSmeForecastText(mockInputData.smeForecastText[currentLang]);
-    setSimulationResult(null); // Clear terminal text so it doesn't stay in the wrong language
+    setSimulationResult(null); 
   }, [currentLang]);
 
   const toolsList = [
@@ -69,22 +70,22 @@ export const Tools: React.FC = () => {
     },
     {
       id: 2,
-      title: { ar: "إعداد التصريحات في قوالب جاهزة", fr: "Préparation des Déclarations en Modèles Prêts", en: "Declaration Preparation with Ready-Made Templates" },
-      desc: { ar: "توليد التصريحات الجبائية تلقائياً في قوالب جاهزة مطابقة للمتطلبات القانونية الجزائرية.", fr: "Génération automatique des déclarations fiscales et sociales dans des modèles conformes à la réglementation algérienne.", en: "Automatically generates tax and social declarations in ready-to-use templates compliant with Algerian regulations." },
+      title: { ar: "إعداد التصريحات في قوالب جاهزة (G50)", fr: "Préparation des Déclarations en Modèles Prêts (G50)", en: "Declaration Preparation with Ready-Made Templates (G50)" },
+      desc: { ar: "توليد التصريحات الجبائية (G50) تلقائياً في قالب جاهز ومفصل بناءً على أرقام أعمالك الفعلية والتشريع الجزائري.", fr: "Génération automatique et calcul interactif de la déclaration fiscale mensuelle G50 selon la réglementation algérienne.", en: "Automatically calculates and generates a detailed monthly G50 tax declaration template based on your actual inputs." },
       icon: Database,
       color: "bg-white border-blue-100 text-amber-400"
     },
     {
       id: 3,
       title: { ar: "مسح القوائم المالية واكتشاف الأخطاء", fr: "Analyse des États Financiers et Détection d'Erreurs", en: "Financial Statement Scanning & Error Detection" },
-      desc: { ar: "فحص شامل للقوائم المالية والميزانيات واكتشاف الأخطاء والتناقضات الحسابية بشكل تلقائي.", fr: "Vérification complète des états financiers et bilans avec détection automatique des erreurs et incohérences comptables.", en: "Comprehensive scanning of financial statements and balance sheets with automatic detection of errors and accounting inconsistencies." },
+      desc: { ar: "قريباً...", fr: "Disponible bientôt...", en: "Coming soon..." },
       icon: ShieldAlert,
       color: "bg-white border-blue-100 text-rose-400"
     },
     {
       id: 4,
       title: { ar: "تحليل القوائم المالية باستخدام الذكاء الاصطناعي وتقديم الاقتراحات", fr: "Analyse des États Financiers par IA avec Recommandations", en: "AI-Powered Financial Statement Analysis & Suggestions" },
-      desc: { ar: "تحليل عميق للقوائم المالية بالذكاء الاصطناعي مع تقديم توصيات واقتراحات استراتيجية لتحسين الأداء المالي.", fr: "Analyse approfondie des états financiers par intelligence artificielle avec recommandations stratégiques pour optimiser la performance financière.", en: "Deep AI-driven analysis of financial statements with strategic recommendations and suggestions to improve financial performance." },
+      desc: { ar: "قريباً...", fr: "Disponible bientôt...", en: "Coming soon..." },
       icon: Cpu,
       color: "bg-white border-blue-100 text-sky-400"
     }
@@ -97,175 +98,44 @@ export const Tools: React.FC = () => {
     setTimeout(() => {
       setIsProcessing(false);
       
-      // 4. Localized simulation outputs so the terminal changes languages correctly
       if (toolId === 0) {
         if (currentLang === 'ar') {
-          setSimulationResult(`[القيود المحاسبية]
-التاريخ: 2026-05-22
-
-حسابات مدينة:
-- الصنف 3 (حساب 381 - المشتريات من المواد الأولية واللوازم): 10000 دج
-- الصنف 4 (حساب 4456 - الضريبة على القيمة المضافة القابلة للاسترجاع): 1900 دج
-
-حسابات دائنة:
-- الصنف 4 (حساب 401 - موردو المخزونات والخدمات): 11900 دج
-
-[البيان]: تسجيل عملية شراء مواد أولية على الحساب .`);
+          setSimulationResult(`[القيود المحاسبية]\nالتاريخ: 2026-05-22\n\nحسابات مدينة:\n- الصنف 3 (حساب 381): 10000 دج\n- الصنف 4 (حساب 4456): 1900 دج\n\nحسابات دائنة:\n- الصنف 4 (حساب 401): 11900 دج\n\n[البيان]: تسجيل عملية شراء مواد أولية على الحساب .`);
         } else if (currentLang === 'fr') {
-          setSimulationResult(`[Ecritures Comptables]
-Date: 22-05-2026
-
-Comptes débiteurs :
-- Classe 3 (compte 381 - Achats de matières premières et fournitures) : 10 000 DA
-- Classe 4 (compte 4456 - Taxe sur la valeur ajoutée récupérable) : 1 900 DA
-
-Comptes créditeurs :
-- Classe 4 (compte 401 - Fournisseurs de stocks et de services) : 11 900 DA
-
-[Libellé]: Constatation Achat matières premières.`);
+          setSimulationResult(`[Ecritures Comptables]\nDate: 22-05-2026\n\nComptes débiteurs :\n- Classe 3 (compte 381) : 10 000 DA\n- Classe 4 (compte 4456) : 1 900 DA\n\nComptes créditeurs :\n- Classe 4 (compte 401) : 11 900 DA\n\n[Libellé]: Constatation Achat matières premières.`);
         } else {
-          setSimulationResult(`[Accounting Entries]
-Date: 2026-05-22
-
-DEBIT LINES:
-
-- Class 3 (Account 381 - Purchases of raw materials and supplies): 10,000 DA
-- Class 4 (Account 4456 - Recoverable value-added tax): 1,900 DA
-
-CREDIT LINES:
-- Class 4 (Account 401 - Suppliers of Inventory and Services): 45,000 DZD
-
-[Description]: Recognition of Raw Material Purchase.`);        }
+          setSimulationResult(`[Accounting Entries]\nDate: 2026-05-22\n\nDEBIT LINES:\n- Class 3 (Account 381): 10,000 DA\n- Class 4 (Account 4456): 1,900 DA\n\nCREDIT LINES:\n- Class 4 (Account 401): 11,900 DA\n\n[Description]: Recognition of Raw Material Purchase.`);
+        }
       } else if (toolId === 1) {
         if (currentLang === 'ar') {
-          setSimulationResult(`[تقرير تشخيص مسح الذكاء الاصطناعي OCR: ${selectedMockPdf}]
-- نوع الوثيقة: فاتورة مورد
-- اسم المورد: Sarl Mitidja Carton Algerie (المركز: البليدة)
-- رقم النيف (NIF) المكتشف: 001209043224190 
-- المبلغ الصافي (HT): 500,000 دج
-- معدل القيمة المضافة: 19% -> 95,000 دج
-- المبلغ الإجمالي (TTC): 595,000 دج
-`);
+          setSimulationResult(`[تقرير تشخيص مسح الذكاء الاصطناعي OCR: ${selectedMockPdf}]\n- نوع الوثيقة: فاتورة مورد\n- اسم المورد: Sarl Mitidja Carton Algerie (المركز: البليدة)\n- رقم النيف (NIF) المكتشف: 001209043224190 \n- المبلغ الصافي (HT): 500,000 دج\n- معدل القيمة المضافة: 19% -> 95,000 دج\n- المبلغ الإجمالي (TTC): 595,000 دج\n`);
         } else if (currentLang === 'fr') {
-          setSimulationResult(`[RAPPORT DIAGNOSTIC SCAN OCR IA: ${selectedMockPdf}]
-- Type de Document: Facture de Fournisseur
-- Nom du Fournisseur: Sarl Mitidja Carton Algerie (Siège: Blida)
-- NIF Détecté: 001209043224190 
-- Montant Hors Taxe (HT): 500 000 DZD
-- Taux de TVA: 19%  -> 95 000 DZD
-- Montant TTC: 595 000 DZD
-`);
+          setSimulationResult(`[RAPPORT DIAGNOSTIC SCAN OCR IA: ${selectedMockPdf}]\n- Type de Document: Facture de Fournisseur\n- Nom du Fournisseur: Sarl Mitidja Carton Algerie (Siège: Blida)\n- NIF Détecté: 001209043224190 \n- Montant Hors Taxe (HT): 500 000 DZD\n- Taux de TVA: 19%  -> 95 000 DZD\n- Montant TTC: 595 000 DZD\n`);
         } else {
-          setSimulationResult(`[AI OCR SCAN DIAGNOSTIC REPORT: ${selectedMockPdf}]
-- Document Type: Supplier Expense Invoice
-- Vendor Name: Sarl Mitidja Carton Algerie (HQ: Blida)
-- Supplier NIF Detected: 001209043224190 
-- Base Amount (HT): 500,000 DZD
-- VAT rate: 19% -> 95,000 DZD
-- Total Amount (TTC): 595,000 DZD
-`);
+          setSimulationResult(`[AI OCR SCAN DIAGNOSTIC REPORT: ${selectedMockPdf}]\n- Document Type: Supplier Expense Invoice\n- Vendor Name: Sarl Mitidja Carton Algerie (HQ: Blida)\n- Supplier NIF Detected: 001209043224190 \n- Base Amount (HT): 500,000 DZD\n- VAT rate: 19% -> 95,000 DZD\n- Total Amount (TTC): 595,000 DZD\n`);
         }
       } else if (toolId === 2) {
-        const sales = Number(monthlySales.replace(/,/g, '')) || 4500000;
-        const payroll = Number(monthlyStaffPayroll.replace(/,/g, '')) || 1200000;
-        const tap = Math.round(sales * 0.015);
-        const irgSim = Math.round(payroll * 0.18);
-        const totalTaxOutflow = tap + irgSim;
+        const s19 = Number(sales19.replace(/,/g, '')) || 0;
+        const s9 = Number(sales9.replace(/,/g, '')) || 0;
+        const payroll = Number(monthlyStaffPayroll.replace(/,/g, '')) || 0;
+        
+        const tva19 = Math.round(s19 * 0.19);
+        const tva9 = Math.round(s9 * 0.09);
+        const totalTva = tva19 + tva9;
+        
+        const totalSales = s19 + s9;
+        const tapRate = hasTapExemption ? 0 : 0.015; 
+        const tap = Math.round(totalSales * tapRate);
+        const irgSim = Math.round(payroll * 0.15); 
+        
+        const totalTaxOutflow = totalTva + tap + irgSim;
 
         if (currentLang === 'ar') {
-          setSimulationResult(`[معاينة حساب الإقرار الشهري G50]
-رقم الأعمال (المبيعات خارج الضريبة): ${sales.toLocaleString()} دج
-كتلة أجور الموظفين: ${payroll.toLocaleString()} دج
-
-الرسوم والضرائب المتوقعة (قانون المالية الجزائري):
-- رمز الضريبة 101 (TAP - الرسم على النشاط المهني @ 1.5%): ${tap.toLocaleString()} دج
-- رمز الضريبة 110 (IRG - الضريبة على الدخل الإجمالي للمرتبات): ${irgSim.toLocaleString()} دج
-- حقوق الطابع العيني: 2,500 دج
------------------------------------------------------------
-إجمالي مدفوعات G50 المتوقعة: ${totalTaxOutflow.toLocaleString()} دج`);
+          setSimulationResult(`[قالب معاينة الإقرار الشهري الرسمي G50 الجاهز]\n-----------------------------------------------------------\nوزارة المالية - المديرية العامة للضرائب (الجزائر)\nالمكلف بالضريبة: ${companyName} | رقم التعريف الجبائي (NIF): ${nifNumber}\nالنظام الجبائي: النظام الحقيقي (Régime Réel)\n-----------------------------------------------------------\n\nالقسم الأول: الرسوم على رقم الأعمال (الرمز 401 - TVA)\n- مبيعات بمعدل 19%: ${s19.toLocaleString()} دج | الضريبة المستحقة: ${tva19.toLocaleString()} دج\n- مبيعات بمعدل 9%: ${s9.toLocaleString()} دج | الضريبة المستحقة: ${tva9.toLocaleString()} دج\n=> إجمالي الضريبة على القيمة المضافة المحصلة: ${totalTva.toLocaleString()} دج\n\nالقسم الثاني: الرسم على النشاط المهني (الرمز 101 - TAP)\n- الأساس الخاضع للضريبة (HT): ${totalSales.toLocaleString()} دج\n- المعدل المطبق: ${tapRate * 100}% ${hasTapExemption ? '(معفى قانوناً)' : ''}\n=> الرسوم المستحقة للـ TAP: ${tap.toLocaleString()} دج\n\nالقسم الثالث: الضريبة على الدخل الإجمالي للأجور (الرمز 110 - IRG)\n- كتلة الأجور المصرح بها: ${payroll.toLocaleString()} دج\n=> ضريبة الـ IRG المقتطعة من المصدر: ${irgSim.toLocaleString()} دج\n\n-----------------------------------------------------------\n[صافي المبلغ الإجمالي الواجب دفعه للقباضة]: ${totalTaxOutflow.toLocaleString()} دج\n(قالب جاهز للاستخراج والمطابقة القانونية ✅)`);
         } else if (currentLang === 'fr') {
-          setSimulationResult(`[APERCU DU CALCUL DE LA DECLARATION MENSUELLE G50]
-Chiffre d'Affaires (Ventes HT): ${sales.toLocaleString()} DZD
-Registre des Salaires Personnel: ${payroll.toLocaleString()} DZD
-
-ESTIMATION DES CODES D'IMPOSITION (Loi de Finances Algérie):
-- Code Impôt 101 (TAP @ 1.5%): ${tap.toLocaleString()} DZD
-- Code Impôt 110 (IRG Salaires avec barème forfaitaire): ${irgSim.toLocaleString()} DZD
-- Droit de Timbre: 2 500 DZD
------------------------------------------------------------
-FLUX DE SORTIE G50 PROJETÉ: ${totalTaxOutflow.toLocaleString()} DZD`);
+          setSimulationResult(`[MODÈLE DE DÉCLARATION MENSUELLE OFFICIELLE G50]\n-----------------------------------------------------------\nMINISTÈRE DES FINANCES - DIRECTION GÉNÉRALE DES IMPÔTS (ALGERIE)\nContribuable : ${companyName} | NIF : ${nifNumber}\nRégime Fiscal : Régime Réel\n-----------------------------------------------------------\n\nSECTION I : TAXE SUR LE CHIFFRE D'AFFAIRES (Code Impôt 401 - TVA)\n- Ventes au Taux Normal 19% : ${s19.toLocaleString()} DA | TVA Due : ${tva19.toLocaleString()} DA\n- Ventes au Taux Réduit 9%  : ${s9.toLocaleString()} DA | TVA Due : ${tva9.toLocaleString()} DA\n=> Total TVA Collectée : ${totalTva.toLocaleString()} DA\n\nSECTION II : TAXE SUR L'ACTIVITÉ PROFESSIONNELLE (Code Impôt 101 - TAP)\n- Base Imposable Globale (HT) : ${totalSales.toLocaleString()} DA\n- Taux Appliqué : ${tapRate * 100}% ${hasTapExemption ? '(Exonéré)' : ''}\n=> Montant TAP Dû : ${tap.toLocaleString()} DA\n\nSECTION III : IMPÔT SUR LE REVENU GLOBAL / SALAIRES (Code Impôt 110 - IRG)\n- Masse Salariale Déclarée : ${payroll.toLocaleString()} DA\n=> Montant IRG à Reverser : ${irgSim.toLocaleString()} DA\n\n-----------------------------------------------------------\n[NET À PAYER TOTAL À LA RECETTE DES IMPÔTS] : ${totalTaxOutflow.toLocaleString()} DA`);
         } else {
-          setSimulationResult(`[G50 MONTHLY RETURN CALCULATION PREVIEW]
-Turnover Range (Sales HT): ${sales.toLocaleString()} DZD
-Staff Salary Register: ${payroll.toLocaleString()} DZD
-
-ESTIMATED FISCAL LEVY CODES:
-- Code Impôt 101 (TAP @ 1.5%): ${tap.toLocaleString()} DZD
-- Code Impôt 110 (IRG Salaires): ${irgSim.toLocaleString()} DZD
-- Stamp Duty: 2,500 DZD
------------------------------------------------------------
-PROJECTED G50 OUTFLOW: ${totalTaxOutflow.toLocaleString()} DZD`);
-        }
-      } else if (toolId === 3) {
-        if (currentLang === 'ar') {
-          setSimulationResult(`[موازنة المراجعة المالي SCF - فحص التحقق]
-الحالة: تم اكتشاف خلل حرج في التوازن
-
-فشل مطابقة التشخيص:
-مجموع المدين: 14,800,000 دج
-مجموع الدائن: 14,850,000 دج
-الفارق المكتشف: -50,000 دج (رصيد غير متطابق)
-
-إجراء تصحيحي موصى به:
-سجل "حساب الانتظار (حساب 47100)" رصيدًا دائنًا معلقًا بقيمة 50,000 دج. تحقق من الإيداعات المصرفية غير المسجلة أو قسائم G50 غير المصفاة لدى الخزينة.`);
-        } else if (currentLang === 'fr') {
-          setSimulationResult(`[SCAN DE VÉRIFICATION DE LA BALANCE SCF]
-Statut: ÉCART CRITIQUE DÉTECTÉ
-
-ÉCHEC DE CORRESPONDANCE DIAGNOSTIC:
-Somme Totale Débit: 14 800 000 DZD
-Somme Totale Crédit: 14 850 000 DZD
-Écart détecté: -50 000 DZD (Balance non équilibrée)
-
-VOUCHER DE CORRECTION RECOMMANDÉ:
-Le "Compte d'attente (Compte 47100)" enregistre un solde créditeur de 50 000 DZD. Vérifiez les dépôts bancaires non enregistrés ou les quittances G50 non apurées au Trésor.`);
-        } else {
-          setSimulationResult(`[SCF TRIAL BALANCE VERIFICATION SCAN]
-Status: CRITICAL EXCESS DETECTED
-
-DIAGNOSIS MATCH FAIL:
-Total Debit Sum: 14,800,000 DZD
-Total Credit Sum: 14,850,000 DZD
-Variance detected: -50,000 DZD
-
-CORRECTION VOUCHER RECOMMENDED:
-"Suspense Balance Account (Compte 47100)" registered an outstanding credit of 50,000 DZD.`);
-        }
-      } else if (toolId === 4) {
-        if (currentLang === 'ar') {
-          setSimulationResult(`[مذكرة عمل استراتيجية مالية بالذكاء الاصطناعي]
-التوجيه الأساسي: "${smeForecastText}"
-
-توصيات محلية جزائرية:
-1. المزايا الضريبية للمناطق: تستفيد منشآت التحويل الغذائي والزراعي في البليدة من إعفاءات ضريبية ممتدة (IBS/IRG). تحقق من ملفات الإعفاء الخاصة بك.
-2. شراء السلع بدون ضريبة (Achats en Franchise): تقدم بطلب للاستفادة من الإعفاء المحتسب للمعدات الصناعية لحماية السيولة النقدية الفورية.
-3. تخفيضات اشتراكات الضمان الاجتماعي CNAS: استفد من تدابير الوكالة الوطنية للتشغيل (ANEM) التي تخفض حصة صاحب العمل في اشتراكات CNAS بنسبة تصل إلى 30% للموظفين الجدد.`);
-        } else if (currentLang === 'fr') {
-          setSimulationResult(`[MEMO STRATÉGIQUE FINANCIER PAR IA]
-Directive Principale: "${smeForecastText}"
-
-RECOMMANDATIONS LOCALES:
-1. Optimisation Fiscale Agro-alimentaire: Les unités de transformation à Blida bénéficient d'exonérations d'IBS/IRG. Validez vos dossiers d'exemption.
-2. Achats en Franchise de TVA: Sollicitez les attestations de dispense de TVA pour l'acquisition de biens d'équipements afin de préserver votre trésorerie immédiate.
-3. Allégements CNAS Patronaux: Profitez des abattements ANEM réduisant la quote-part patronale CNAS jusqu'à 30% pour les recrutements de jeunes diplômés.`);
-        } else {
-          setSimulationResult(`[AI FINANCIAL STRATEGIC ACTION MEMO]
-Core Directive: "${smeForecastText}"
-
-LOCAL RECOMMENDATIONS:
-1. Agro-Tax Holiday: Processing facilities in Blida benefit from specific IBS/IRG structural tax exemptions. Validate eligibility.
-2. VAT Exemption Certificates: Apply for local "Achat en Franchise" certificates for industrial capital machinery to shield cash flow.
-3. Payroll CNAS Relief: Apply for national ANEM subsidies that mitigate your employer CNAS tax contributions by up to 30% for local graduate staff.`);
+          setSimulationResult(`[OFFICIAL G50 MONTHLY RETURN PREVIEW TEMPLATE]\n-----------------------------------------------------------\nMINISTRY OF FINANCE - GENERAL DIRECTORATE OF TAXES (ALGERIA)\nTaxpayer Name: ${companyName} | NIF Number: ${nifNumber}\nFiscal Regime: Régime Réel (Actual System)\n-----------------------------------------------------------\n\nSECTION I: VALUE ADDED TAX (Tax Code 401 - TVA)\n- Turnover at 19%: ${s19.toLocaleString()} DA | VAT Due: ${tva19.toLocaleString()} DA\n- Turnover at 9%: ${s9.toLocaleString()} DA | VAT Due: ${tva9.toLocaleString()} DA\n=> Total Collected VAT Outflow: ${totalTva.toLocaleString()} DA\n\nSECTION II: PROFESSIONAL ACTIVITY TAX (Tax Code 101 - TAP)\n- Base Taxable Turnover (HT): ${totalSales.toLocaleString()} DA\n- Applied Rate: ${tapRate * 100}% ${hasTapExemption ? '(Legally Exempt)' : ''}\n=> TAP Tax Outflow: ${tap.toLocaleString()} DA\n\nSECTION III: INDIVIDUAL INCOME TAX ON SALARIES (Tax Code 110 - IRG)\n- Total Staff Salary Ledger: ${payroll.toLocaleString()} DA\n=> Withholding IRG Tax Amount: ${irgSim.toLocaleString()} DA\n\n-----------------------------------------------------------\n[NET TOTAL AMOUNT TO PAY AT CASHIER]: ${totalTaxOutflow.toLocaleString()} DA`);
         }
       }
     }, 600);
@@ -278,25 +148,22 @@ LOCAL RECOMMENDATIONS:
         {/* Title Header */}
         <div className="glass p-6 sm:p-8 rounded-2xl text-center space-y-4 border border-blue-100 relative overflow-hidden backdrop-blur-md">
           <div className="absolute top-0 right-1/2 translate-x-1/2 w-48 h-48 bg-brand-primary/5 rounded-full blur-[80px] pointer-events-none"></div>
-          
           <div className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-mono bg-brand-primary/10 text-brand-primary border border-brand-primary/20 rounded uppercase tracking-wider">
             <Cpu className="w-3.5 h-3.5 animate-spin text-brand-primary" />
             <span>{t('interactiveSandboxEngine')}</span>
           </div>
-          
           <h1 className="text-3xl sm:text-4xl font-serif font-black text-slate-900 tracking-tight leading-none mt-1">
             {t('aiToolsHeroTitle')}
           </h1>
-          
           <p className="text-xs sm:text-sm text-slate-400 max-w-2xl mx-auto leading-relaxed">
             {t('aiToolsHeroSub')}
           </p>
         </div>
 
-        {/* Grid Layout containing tools & live simulator outputs */}
+        {/* Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Column (col-span-5) - The Tool Cards */}
+          {/* Left Column (Tool Cards) */}
           <div className="lg:col-span-5 space-y-3.5 text-left rtl:text-right">
             {toolsList.map((tool) => {
               const Icon = tool.icon;
@@ -318,10 +185,8 @@ LOCAL RECOMMENDATIONS:
                       </div>
                       <h3 className="font-serif font-bold text-slate-800 text-xs sm:text-sm">{tObj(tool.title)}</h3>
                     </div>
-                    
                     {isExpanded ? <ChevronUp className="w-4 h-4 text-brand-primary" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
                   </div>
-
                   <p className="text-slate-400 text-[11px] sm:text-xs leading-normal">
                     {tObj(tool.desc)}
                   </p>
@@ -330,12 +195,10 @@ LOCAL RECOMMENDATIONS:
             })}
           </div>
 
-          {/* Right Column (col-span-7) - Live Simulation Interactive Control Window */}
+          {/* Right Column (Control & Output Window) */}
           <div className="lg:col-span-7 bg-white border border-blue-100 rounded-2xl p-6 sm:p-8 shadow-classic space-y-6 sticky top-24 text-left rtl:text-right">
-            
             {expandedTool !== null ? (
               <>
-                {/* Dynamic Action Header depending on tool */}
                 <div className="pb-4 border-b border-blue-100 flex items-center justify-between gap-3">
                   <div>
                     <h2 className="font-serif font-black text-brand-primary text-sm sm:text-base leading-none">
@@ -345,36 +208,21 @@ LOCAL RECOMMENDATIONS:
                   <span className="text-[10px] bg-brand-primary/10 border border-brand-primary/20 text-brand-primary px-2.5 py-1 rounded font-mono tracking-wider">{t('scfVersionLabel')}</span>
                 </div>
 
-                {/* Dynamic input widgets depending on selected tool */}
+                {/* Dynamic Inputs */}
                 <div className="space-y-4 font-sans text-xs">
-                  
-                  {/* TOOL 0 INPUT */}
                   {expandedTool === 0 && (
                     <div className="space-y-1.5">
                       <label className="block text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">{t('businessExpNarrative')}</label>
-                      <textarea
-                        rows={3}
-                        value={rawEntryText}
-                        onChange={(e) => setRawEntryText(e.target.value)}
-                        className="w-full border border-blue-200 p-3 rounded-lg text-xs text-slate-900 bg-white/40 focus:outline-none focus:border-brand-primary "
-                      />
+                      <textarea rows={3} value={rawEntryText} onChange={(e) => setRawEntryText(e.target.value)} className="w-full border border-blue-200 p-3 rounded-lg text-xs text-slate-900 bg-white/40 focus:outline-none focus:border-brand-primary " />
                     </div>
                   )}
 
-                  {/* TOOL 1 INPUT */}
                   {expandedTool === 1 && (
                     <div className="space-y-3">
                       <label className="block text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">{t('chooseVoucherScan')}</label>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         {['invoice_or_0982.pdf'].map((f) => (
-                          <button
-                            key={f}
-                            type="button"
-                            onClick={() => setSelectedMockPdf(f)}
-                            className={`p-2.5 text-[10px] border rounded-lg font-mono text-center cursor-pointer transition ${selectedMockPdf === f ? 'bg-brand-primary/10 border-brand-primary text-brand-primary font-bold' : 'border-blue-100 hover:bg-slate-50 text-slate-400'}`}
-                          >
-                            📄 {f}
-                          </button>
+                          <button key={f} type="button" onClick={() => setSelectedMockPdf(f)} className={`p-2.5 text-[10px] border rounded-lg font-mono text-center cursor-pointer transition ${selectedMockPdf === f ? 'bg-brand-primary/10 border-brand-primary text-brand-primary font-bold' : 'border-blue-100 hover:bg-slate-50 text-slate-400'}`}>📄 {f}</button>
                         ))}
                       </div>
                     </div>
@@ -382,92 +230,86 @@ LOCAL RECOMMENDATIONS:
 
                   {/* TOOL 2 INPUT */}
                   {expandedTool === 2 && (
-                    <div className="space-y-3">
-                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1">
-                          <label className="block text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">{t('monthlySalesHt')}</label>
-                          <input 
-                            type="text" 
-                            value={monthlySales}
-                            onChange={(e) => setMonthlySales(e.target.value)}
-                            className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono bg-white/40 focus:outline-none focus:border-brand-primary"
-                          />
+                          <label className="block text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">{currentLang === 'ar' ? 'اسم المؤسسة / المكلف' : 'Nom de l\'entreprise'}</label>
+                          <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-slate-900 bg-white/40 focus:outline-none focus:border-brand-primary" />
                         </div>
                         <div className="space-y-1">
-                          <label className="block text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">{t('staffPayrollDzd')}</label>
-                          <input 
-                            type="text" 
-                            value={monthlyStaffPayroll}
-                            onChange={(e) => setMonthlyStaffPayroll(e.target.value)}
-                            className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono bg-white/40 focus:outline-none focus:border-brand-primary"
-                          />
+                          <label className="block text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">{currentLang === 'ar' ? 'رقم التعريف الجبائي (NIF)' : 'Numéro NIF'}</label>
+                          <input type="text" value={nifNumber} onChange={(e) => setNifNumber(e.target.value)} className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono bg-white/40 focus:outline-none focus:border-brand-primary" />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-dashed border-slate-100">
+                        <div className="space-y-1">
+                          <label className="block text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">{currentLang === 'ar' ? 'مبيعات خاضعة لمعدل 19% (دج)' : 'Ventes Taux 19% (DA)'}</label>
+                          <input type="text" value={sales19} onChange={(e) => setSales19(e.target.value)} className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono bg-white/40 focus:outline-none focus:border-brand-primary" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="block text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">{currentLang === 'ar' ? 'مبيعات خاضعة لمعدل 9% (دج)' : 'Ventes Taux 9% (DA)'}</label>
+                          <input type="text" value={sales9} onChange={(e) => setSales9(e.target.value)} className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono bg-white/40 focus:outline-none focus:border-brand-primary" />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-dashed border-slate-100 items-center">
+                        <div className="space-y-1">
+                          <label className="block text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">{currentLang === 'ar' ? 'كتلة أجور الموظفين (IRG)' : 'Masse Salariale Personnel'}</label>
+                          <input type="text" value={monthlyStaffPayroll} onChange={(e) => setMonthlyStaffPayroll(e.target.value)} className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono bg-white/40 focus:outline-none focus:border-brand-primary" />
+                        </div>
+                        <div className="flex items-center gap-2 mt-4">
+                          <input type="checkbox" id="tap_exempt" checked={hasTapExemption} onChange={(e) => setHasTapExemption(e.target.checked)} className="w-4 h-4 border-blue-200 text-brand-primary focus:ring-brand-primary rounded" />
+                          <label htmlFor="tap_exempt" className="text-[10px] font-mono font-bold text-slate-500 uppercase cursor-pointer">{currentLang === 'ar' ? 'تفعيل إعفاء الـ TAP (0%)' : 'Exonération TAP (0%)'}</label>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  {/* TOOL 3 INPUT */}
-                  {expandedTool === 3 && (
-                    <div className="space-y-1.5">
-                      <label className="block text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest text-left">{t('currentTrialBalanceValues')}</label>
-                      <input 
-                        type="text" 
-                        value={rawBalanceState}
-                        onChange={(e) => setRawBalanceState(e.target.value)}
-                        className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono bg-white/40 focus:outline-none focus:border-brand-primary"
-                      />
+                  {/* واجهة نظيفة معروضة لآخر أداتين */}
+                  {(expandedTool === 3 || expandedTool === 4) && (
+                    <div className="bg-slate-50/50 border border-dashed border-blue-100 rounded-xl p-8 flex flex-col items-center justify-center text-center text-slate-400 min-h-[160px]">
+                      <Info className="w-5 h-5 text-brand-primary/30 mb-2 shrink-0" />
+                      <p className="text-xs font-mono font-bold uppercase tracking-wider text-brand-primary">
+                        {currentLang === 'ar' ? 'قريباً جداً' : currentLang === 'fr' ? 'Disponible Bientôt' : 'Coming Soon'}
+                      </p>
+                      <p className="text-[11px] font-sans text-slate-400 max-w-xs mt-1 leading-normal">
+                        {currentLang === 'ar' 
+                          ? 'يجري العمل حالياً على تهيئة خوارزميات فحص القوائم والتقارير المالية للشركات والمكلفين.' 
+                          : 'Nous finalisons les algorithmes d\'analyse intelligente des états financiers pour cette section.'}
+                      </p>
                     </div>
                   )}
 
-                  {/* TOOL 4 INPUT */}
-                  {expandedTool === 4 && (
-                    <div className="space-y-1.5">
-                      <label className="block text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block text-left">{t('smeStrategicImperative')}</label>
-                      <input 
-                        type="text" 
-                        value={smeForecastText}
-                        onChange={(e) => setSmeForecastText(e.target.value)}
-                        className="w-full border border-blue-200 rounded-lg px-3 py-2 text-xs text-slate-900 bg-white/40 focus:outline-none focus:border-brand-primary"
-                      />
-                    </div>
+                  {/* زر التشغيل يظهر للأدوات الثلاثة الأولى التفاعلية فقط */}
+                  {expandedTool < 3 && (
+                    <button onClick={() => handleRunSimulation(expandedTool)} disabled={isProcessing} className="w-full py-3 bg-brand-primary hover:bg-brand-dark disabled:bg-slate-800 text-white font-mono font-bold uppercase tracking-widest rounded-lg text-xs cursor-pointer transition flex items-center justify-center gap-1.5">
+                      {isProcessing ? (
+                        <><RefreshCw className="w-4 h-4 animate-spin text-white" /><span>{t('processingLedgerParams')}</span></>
+                      ) : (
+                        <><Play className="w-4 h-4 fill-white text-white shrink-0" /><span>{t('executeSimulation')}</span></>
+                      )}
+                    </button>
                   )}
+                </div>
 
-                  {/* Simulator Trigger Button */}
-                  <button
-                    onClick={() => handleRunSimulation(expandedTool)}
-                    disabled={isProcessing}
-                    className="w-full py-3 bg-brand-primary hover:bg-brand-dark disabled:bg-slate-800 text-white font-mono font-bold uppercase tracking-widest rounded-lg text-xs cursor-pointer transition flex items-center justify-center gap-1.5"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                        <span>{t('processingLedgerParams')}</span>
-                      </>
+                {/* صندوق النتائج يظهر فقط للأدوات الثلاثة الأولى */}
+                {expandedTool < 3 && (
+                  <div className="pt-6 border-t border-blue-100 space-y-2.5">
+                    <h3 className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest block">{t('simulatedOutput')}</h3>
+                    
+                    {simulationResult ? (
+                      <div className="bg-slate-950 text-emerald-400 font-mono p-4 rounded-xl text-xs overflow-x-auto border border-blue-100 leading-relaxed whitespace-pre-wrap min-h-[160px] text-left" dir={currentLang === 'ar' ? 'rtl' : 'ltr'}>
+                        {simulationResult}
+                      </div>
                     ) : (
-                      <>
-                        <Play className="w-4 h-4 fill-white text-white shrink-0" />
-                        <span>{t('executeSimulation')}</span>
-                      </>
+                      <div className="bg-white/20 border border-dashed border-blue-100 rounded-xl p-6 flex flex-col items-center justify-center text-center text-slate-500 min-h-[160px]">
+                        <Info className="w-5 h-5 text-brand-primary/30 mb-1 shrink-0" />
+                        <p className="text-xs font-sans">{t('provideTransactionInstructions')}</p>
+                      </div>
                     )}
-                  </button>
-
-                </div>
-
-                {/* OUTPUT WINDOW CONTAINER */}
-                <div className="pt-6 border-t border-blue-100 space-y-2.5">
-                  <h3 className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest block">{t('simulatedOutput')}</h3>
-                  
-                  {simulationResult ? (
-                    <div className="bg-slate-950 text-emerald-400 font-mono p-4 rounded-xl text-xs overflow-x-auto border border-blue-100 leading-relaxed whitespace-pre-wrap min-h-[160px] text-left">
-                      {simulationResult}
-                    </div>
-                  ) : (
-                    <div className="bg-white/20 border border-dashed border-blue-100 rounded-xl p-6 flex flex-col items-center justify-center text-center text-slate-500 min-h-[160px]">
-                      <Info className="w-5 h-5 text-brand-primary/30 mb-1 shrink-0" />
-                      <p className="text-xs font-sans">{t('provideTransactionInstructions')}</p>
-                    </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </>
             ) : (
               <div className="text-center py-20 text-slate-500 space-y-3 font-mono">
@@ -475,7 +317,6 @@ LOCAL RECOMMENDATIONS:
                 <p className="text-xs leading-relaxed">{t('selectScfTerminalModule')}</p>
               </div>
             )}
-
           </div>
 
         </div>

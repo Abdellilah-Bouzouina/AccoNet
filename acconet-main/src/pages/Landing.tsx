@@ -139,7 +139,6 @@ export const Landing: React.FC = () => {
               <Search className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-brand-primary pointer-events-none ${direction === 'rtl' ? 'right-4' : 'left-4'}`} />
               <input
                 type="text"
-                placeholder={t('searchPlaceholderInput')}
                 value={keyword}
                 onChange={e => setKeyword(e.target.value)}
                 className={`w-full border border-blue-200 bg-blue-50 rounded-xl text-slate-700 focus:border-brand-primary focus:bg-white ${direction === 'rtl' ? 'pr-12 pl-4' : 'pl-12 pr-4'}`}
