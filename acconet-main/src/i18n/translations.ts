@@ -253,6 +253,11 @@ export const translations: TranslationDictionary = {
     fr: "Note (Élevée en premier)",
     en: "Rating (Highest first)"
   },
+  sortRatingAsc: {
+    ar: "التقييم (الأدنى أولاً)",
+    fr: "Note (Faible en premier)",
+    en: "Rating (Lowest first)"
+  },
   sortPriceAsc: {
     ar: "السعر (الأقل أولاً)",
     fr: "Prix (Ordre croissant)",
@@ -267,6 +272,11 @@ export const translations: TranslationDictionary = {
     ar: "سنوات الخبرة (الأقدم أولاً)",
     fr: "Expérience (Plus qualifiés d'abord)",
     en: "Experience (Most senior first)"
+  },
+  sortExperienceAsc: {
+    ar: "سنوات الخبرة (الأحدث أولاً)",
+    fr: "Expérience (Plus récents d'abord)",
+    en: "Experience (Newest first)"
   },
   minRating: {
     ar: "الحد الأدنى للتقييم",
@@ -317,6 +327,36 @@ export const translations: TranslationDictionary = {
     ar: "مشغول حالياً بكامل الطاقة",
     fr: "Indisponible",
     en: "Fully Booked"
+  },
+  wilayaFilterLabel: {
+    ar: "الولاية",
+    fr: "Wilaya",
+    en: "Wilaya"
+  },
+  specialtyFilterLabel: {
+    ar: "التخصص / المهنة",
+    fr: "Spécialité / Profession",
+    en: "Specialty / Profession"
+  },
+  searchingLabel: {
+    ar: "جارٍ البحث...",
+    fr: "Recherche en cours...",
+    en: "Searching..."
+  },
+  filterLabelPrefix: {
+    ar: "الفلتر:",
+    fr: "Filtre :",
+    en: "Filter:"
+  },
+  noResultsTitle: {
+    ar: "لم يُعثر على مهني مطابق",
+    fr: "Aucun professionnel correspondant trouvé",
+    en: "No matching professional found"
+  },
+  noResultsBody: {
+    ar: "لم يستوفِ أي مهني معتمد معايير بحثك الدقيقة في قاعدة بياناتنا النشطة. قم بإزالة قيود الولاية أو الكلمة المفتاحية للعثور على مزيد من المهنيين.",
+    fr: "Aucun professionnel certifié ne correspond exactement à vos critères dans notre base de données active. Retirez les filtres de wilaya ou de mot-clé pour trouver plus de professionnels.",
+    en: "No certified practitioners met your exact constraints in our active database. Remove wilaya or keyword constraints to find more professionals."
   },
 
   // Professional Profile Page
@@ -1089,4 +1129,3 @@ mockMonthlyStaffPayroll: {
     en: "All rights reserved. Styled with pride for Algerian entrepreneurs & finance agents."
   }
 };
-

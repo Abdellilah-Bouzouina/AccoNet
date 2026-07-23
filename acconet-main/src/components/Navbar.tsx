@@ -7,7 +7,7 @@ import { Menu, X, Languages, Search, Cpu, LayoutDashboard, LogOut, ChevronDown }
 
 export const Navbar: React.FC = () => {
   const { language, setLanguage, t, direction } = useLanguage();
-  const { userRole, setUserRole, currentClient, currentProfessional } = useApp();
+  const { userRole, currentClient, currentProfessional, logout } = useApp();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen,   setLangOpen]   = useState(false);
   const navigate  = useNavigate();
@@ -18,7 +18,11 @@ export const Navbar: React.FC = () => {
       ? 'text-brand-primary font-bold border-b-2 border-brand-primary pb-0.5'
       : 'text-slate-600 hover:text-brand-primary transition-colors duration-150';
 
-  const handleLogout = () => { setUserRole('guest'); navigate('/'); setMobileOpen(false); };
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+    setMobileOpen(false);
+  };
 
   const displayName = () => {
     if (userRole === 'client'       && currentClient)       return currentClient.companyName;
@@ -47,7 +51,6 @@ export const Navbar: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
 
-            {/* ── BRAND: Logo + Platform Name ── */}
             <Link to="/" className="flex items-center gap-3 shrink-0 hover:opacity-90 transition-opacity group">
               <AccoNetLogo height={52} color="#1D4ED8" />
               <div className="hidden sm:flex flex-col leading-none">
@@ -60,7 +63,6 @@ export const Navbar: React.FC = () => {
               </div>
             </Link>
 
-            {/* ── Desktop links ── */}
             <div className="hidden md:flex items-center gap-8 text-sm font-semibold">
               <Link to="/search" className={`flex items-center gap-1.5 ${isActive('/search')}`}>
                 <Search className="w-4 h-4" />
@@ -88,10 +90,8 @@ export const Navbar: React.FC = () => {
               )}
             </div>
 
-            {/* ── Right: Language + Auth ── */}
             <div className="hidden md:flex items-center gap-3">
 
-              {/* Language picker */}
               <div className="relative">
                 <button
                   onClick={() => setLangOpen(!langOpen)}
@@ -115,7 +115,6 @@ export const Navbar: React.FC = () => {
                 )}
               </div>
 
-              {/* Auth buttons */}
               {userRole === 'guest' ? (
                 <div className="flex items-center gap-2">
                   <Link to="/login"    className="px-4 py-2 border border-blue-200 text-slate-600 rounded-lg text-sm font-semibold hover:border-brand-primary hover:text-brand-primary transition">{t('loginLink')}</Link>
@@ -137,7 +136,6 @@ export const Navbar: React.FC = () => {
               )}
             </div>
 
-            {/* ── Mobile hamburger ── */}
             <div className="md:hidden flex items-center gap-2">
               <button onClick={() => setLanguage(language === 'ar' ? 'fr' : language === 'fr' ? 'en' : 'ar')}
                 className="px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm font-bold text-slate-600 uppercase">
@@ -151,7 +149,6 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* ── Mobile menu ── */}
         {mobileOpen && (
           <div className="md:hidden bg-white border-t border-blue-100 px-4 py-4 space-y-2">
             <Link to="/search"   onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-700 font-semibold hover:bg-blue-50 hover:text-brand-primary"><Search className="w-4 h-4" />{t('findProButton')}</Link>

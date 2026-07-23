@@ -1,40 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useApp } from '../context/AppContext';
 import { SearchFilters } from '../components/SearchFilters';
 import { ProfessionalCard } from '../components/ProfessionalCard';
-import { Info } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 
 export const Search: React.FC = () => {
   const { t, tObj, tSpec, language, direction } = useLanguage();
-  const { allProfessionals } = useApp();
+  const { allProfessionals, professionalsLoading } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Retrieve initial params from landing redirect
   const queryKeyword = searchParams.get('keyword') || '';
   const queryWilaya = Number(searchParams.get('wilaya')) || 0;
   const querySpecialty = searchParams.get('specialty') || '';
 
-  // Filter States
   const [keyword, setKeyword] = useState(queryKeyword);
   const [selectedWilaya, setSelectedWilaya] = useState<number>(queryWilaya);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>(querySpecialty);
-  const [minRating, setMinRating] = useState<number>(4.0);
+  const [minRating, setMinRating] = useState<number>(0);
   const [onlyAvailable, setOnlyAvailable] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>('rating');
 
-  // Interactive Skeleton Loading effect for 400ms
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Sync state if query parameters change
   useEffect(() => {
     setKeyword(queryKeyword);
     setSelectedWilaya(queryWilaya);
     setSelectedSpecialty(querySpecialty);
   }, [queryKeyword, queryWilaya, querySpecialty]);
 
-  // Simulate brief loading pulse on filter change to give real feedback
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => {
@@ -47,15 +42,13 @@ export const Search: React.FC = () => {
     setKeyword('');
     setSelectedWilaya(0);
     setSelectedSpecialty('');
-    setMinRating(4.0);
+    setMinRating(0);
     setOnlyAvailable(false);
     setSortBy('rating');
-    setSearchParams({}); // Clear query parameters
+    setSearchParams({});
   };
 
-  // Perform search / filtering logic
   const filteredPros = allProfessionals.filter((pro) => {
-    // 1. Keyword search
     if (keyword) {
       const kw = keyword.toLowerCase();
       const matchName = (pro.name.en + pro.name.fr + pro.name.ar).toLowerCase().includes(kw);
@@ -63,61 +56,39 @@ export const Search: React.FC = () => {
       const matchSpecialty = pro.specialty.toLowerCase().includes(kw);
       if (!matchName && !matchBio && !matchSpecialty) return false;
     }
-
-    // 2. Wilaya filter
-    if (selectedWilaya > 0 && pro.wilayaId !== selectedWilaya) {
-      return false;
-    }
-
-    // 3. Specialty filter
-    if (selectedSpecialty && pro.specialty !== selectedSpecialty) {
-      return false;
-    }
-
-    // 4. Min rating filter
-    if (pro.rating < minRating) {
-      return false;
-    }
-
-    // 5. Only available filter
-    if (onlyAvailable && !pro.available) {
-      return false;
-    }
-
+    if (selectedWilaya > 0 && pro.wilayaId !== selectedWilaya) return false;
+    if (selectedSpecialty && pro.specialty !== selectedSpecialty) return false;
+    if (pro.rating < minRating) return false;
+    if (onlyAvailable && !pro.available) return false;
     return true;
   });
 
-  // Sort logic
   const sortedPros = [...filteredPros].sort((a, b) => {
-    if (sortBy === 'rating') {
-      return b.rating - a.rating;
-    }
-     if (sortBy === 'experience') {
-      return b.yearsExperience - a.yearsExperience;
-    }
+    if (sortBy === 'rating') return b.rating - a.rating;
+    if (sortBy === 'rating-asc') return a.rating - b.rating;
+    if (sortBy === 'experience') return b.yearsExperience - a.yearsExperience;
+    if (sortBy === 'experience-asc') return a.yearsExperience - b.yearsExperience;
     return 0;
   });
 
+  // True while we're fetching the real accountant list from Supabase,
+  // OR while the local filter-change pulse is running.
+  const showSkeleton = professionalsLoading || isLoading;
+
   return (
-    <div className="min-h-screen bg-[#F8FAFF] text-slate-800" id="search_page_wrapper">
+    <div className="min-h-screen bg-[#F8FAFF] text-slate-900" id="search_page_wrapper">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 space-y-10">
-        
-        {/* Editorial Title Section */}
+
         <div className="border-b border-blue-100 pb-6 space-y-2 text-left rtl:text-right">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-brand-primary font-bold">{language === 'ar' ? 'دليل المهنيين المحاسبيين' : 'Annuaire des Professionnels Comptables'}</span>
           <h1 className="text-3xl sm:text-4xl font-serif font-black text-slate-900 tracking-tight leading-none mt-1">
             {t('searchTitle')}
           </h1>
-          <p className="text-[10px] text-slate-400 font-mono uppercase tracking-widest leading-none pt-1">
-            National Board Registered Auditors • SECURE DIRECTORY
-          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Sidebar filters (col-span-4) */}
+
           <div className="lg:col-span-4">
-            <SearchFilters 
+            <SearchFilters
               selectedWilaya={selectedWilaya}
               setSelectedWilaya={setSelectedWilaya}
               selectedSpecialty={selectedSpecialty}
@@ -132,29 +103,27 @@ export const Search: React.FC = () => {
             />
           </div>
 
-          {/* Results grid (col-span-8) */}
           <div className="lg:col-span-8 space-y-6">
-            
-            {/* Status Header above grid */}
+
             <div className="bg-white border border-blue-100 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-classic text-left rtl:text-right">
-              <div className="text-xs font-mono uppercase text-slate-400">
-                {isLoading ? (
+              <div className="text-xs font-mono uppercase text-slate-900">
+                {showSkeleton ? (
                   <span className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 bg-brand-primary animate-ping rounded-full"></span>
-                    جارٍ البحث...
+                    {t('searchingLabel')}
                   </span>
                 ) : (
                   <>
-                    Showing <strong className="text-brand-primary font-bold text-sm font-mono">{sortedPros.length}</strong> authenticated entries
+                    <strong className="text-brand-primary font-bold text-sm font-mono">{sortedPros.length}</strong> {t('resultsCount')}
                   </>
                 )}
               </div>
 
               {keyword && (
                 <div className="flex items-center gap-1.5 bg-brand-primary/15 text-brand-primary text-[10px] font-mono uppercase px-3 py-1 border border-brand-primary/20 rounded self-start">
-                  <span>Filter: "{keyword}"</span>
-                  <button 
-                    onClick={() => setKeyword('')} 
+                  <span>{t('filterLabelPrefix')} "{keyword}"</span>
+                  <button
+                    onClick={() => setKeyword('')}
                     className="font-bold text-rose-450 hover:text-rose-600 ml-1.5 cursor-pointer text-xs"
                   >
                     ×
@@ -163,8 +132,7 @@ export const Search: React.FC = () => {
               )}
             </div>
 
-            {/* SKELETON CARDS LOADING REPLICA */}
-            {isLoading ? (
+            {showSkeleton ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6" id="skeletons_container">
                 {[1, 2, 3, 4].map((n) => (
                   <div key={n} className="bg-white border border-blue-100 p-6 space-y-4 rounded-xl animate-pulse">
@@ -184,49 +152,56 @@ export const Search: React.FC = () => {
                   </div>
                 ))}
               </div>
-            ) : (
-              <>
-                {/* Actual results block */}
-                {sortedPros.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6" id="search_results_grid">
-                    {sortedPros.map((pro) => (
-                      <ProfessionalCard key={pro.id} professional={pro} />
-                    ))}
-                  </div>
-                ) : (
-                  /* Empty state */
-                  <div className="bg-white border border-blue-200 p-12 rounded-xl text-center space-y-5" id="search_empty_state">
-                    <div className="w-12 h-12 bg-blue-50 border border-blue-100 text-slate-400 flex items-center justify-center mx-auto text-xl rounded-xl shadow-classic">
-                      🔍
-                    </div>
-                    <div className="space-y-2">
-                      <h3 className="font-serif font-black text-slate-900 text-base">لم يُعثر على مهني مطابق</h3>
-                      <p className="text-slate-400 text-xs leading-relaxed max-w-sm mx-auto font-sans">
-                        No certified practitioners met your exact constraints in our active database. Remove wilaya or keyword constraints to find more professionals.
-                      </p>
-                    </div>
-                    <button 
-                      onClick={handleResetFilters}
-                      className="px-5 py-2.5 bg-brand-primary hover:bg-brand-dark text-slate-900 font-mono text-[10px] font-bold uppercase tracking-widest cursor-pointer rounded-lg"
-                    >
-                      Reset Filter Parameters
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* Regulatory Citation Directive */}
-            <div className="bg-white border border-blue-200 p-5 gap-3 text-xs text-slate-300 rounded-xl flex text-left rtl:text-right">
-              <Info className="w-5 h-5 text-brand-primary shrink-0 mt-0.5 animate-pulse" />
-              <div className="space-y-1.5">
-                <span className="text-[9px] font-mono uppercase tracking-widest text-brand-primary font-bold block">National Accreditation Fact</span>
-                <p className="font-serif font-bold text-slate-900 text-xs leading-none">Ordre National des Experts Comptables (ONCC) alignment</p>
-                <p className="text-[11px] leading-relaxed text-slate-400">
-                  All accounting practitioners referenced on AccoNet maintain active registrations across Algerian regional fiscal boards. In accordance with standard Finance Law revisions, engagement with certified experts completely satisfied administrative filing compliance.
-                </p>
+            ) : allProfessionals.length === 0 ? (
+              /* Nobody has registered as an accountant on the platform yet */
+              <div className="bg-white border border-blue-200 p-12 rounded-xl text-center space-y-5" id="search_no_accountants_state">
+                <div className="w-12 h-12 bg-blue-50 border border-blue-100 text-brand-primary flex items-center justify-center mx-auto text-xl rounded-xl shadow-classic">
+                  <UserPlus className="w-6 h-6" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="font-serif font-black text-slate-900 text-base">
+                    {language === 'ar' ? 'لا يوجد محاسبون مسجلون بعد' : language === 'en' ? 'No accountants registered yet' : "Aucun comptable inscrit pour l'instant"}
+                  </h3>
+                  <p className="text-slate-900 text-xs leading-relaxed max-w-sm mx-auto font-sans">
+                    {language === 'ar'
+                      ? 'كن أول محاسب معتمد ينضم إلى المنصة.'
+                      : language === 'en'
+                        ? 'Be the first certified accountant to join the platform.'
+                        : 'Soyez le premier comptable agréé à rejoindre la plateforme.'}
+                  </p>
+                </div>
+                <Link
+                  to="/register"
+                  className="inline-block px-5 py-2.5 bg-brand-primary hover:bg-brand-dark text-white font-mono text-[10px] font-bold uppercase tracking-widest cursor-pointer rounded-lg"
+                >
+                  {t('registerLink')}
+                </Link>
               </div>
-            </div>
+            ) : sortedPros.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6" id="search_results_grid">
+                {sortedPros.map((pro) => (
+                  <ProfessionalCard key={pro.id} professional={pro} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white border border-blue-200 p-12 rounded-xl text-center space-y-5" id="search_empty_state">
+                <div className="w-12 h-12 bg-blue-50 border border-blue-100 text-slate-900 flex items-center justify-center mx-auto text-xl rounded-xl shadow-classic">
+                  🔍
+                </div>
+                <div className="space-y-2">
+                  <h3 className="font-serif font-black text-slate-900 text-base">{t('noResultsTitle')}</h3>
+                  <p className="text-slate-900 text-xs leading-relaxed max-w-sm mx-auto font-sans">
+                    {t('noResultsBody')}
+                  </p>
+                </div>
+                <button
+                  onClick={handleResetFilters}
+                  className="px-5 py-2.5 bg-brand-primary hover:bg-brand-dark text-white font-mono text-[10px] font-bold uppercase tracking-widest cursor-pointer rounded-lg"
+                >
+                  {t('resetFilters')}
+                </button>
+              </div>
+            )}
 
           </div>
 
