@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { mapToProfessional, mapToClient } from '../lib/profileMappers';
+import { mapToProfessional, mapToClient, DbService } from '../lib/profileMappers';
 import {
   Professional, Client, Contract, Task,
   contracts as initialContracts, tasks as initialTasks
@@ -17,6 +17,7 @@ interface AppContextProps {
   setCurrentProfessional: (pro: Professional | null) => void;
   allProfessionals: Professional[];
   professionalsLoading: boolean;
+  refreshProfessionals: () => Promise<void>;
   contracts: Contract[];
   tasks: Task[];
   addContract: (contract: Contract) => void;
@@ -36,40 +37,64 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [currentClient, setCurrentClient] = useState<Client | null>(null);
   const [currentProfessional, setCurrentProfessional] = useState<Professional | null>(null);
 
-  // Real accountants pulled from Supabase — replaces the old
-  // hardcoded mockData.professionals list.
   const [allProfessionals, setAllProfessionals] = useState<Professional[]>([]);
   const [professionalsLoading, setProfessionalsLoading] = useState(true);
 
-  // Whether we've finished checking if someone is already logged in
-  // (used to avoid flashing the "guest" view for a split second).
   const [authChecked, setAuthChecked] = useState(false);
 
   const [contracts, setContracts] = useState<Contract[]>(initialContracts);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [activeNotification, setActiveNotification] = useState<{ title: string; message: string } | null>(null);
 
-  // Pull every registered accountant from Supabase for the Search page.
-  const loadProfessionals = async () => {
+  // Pull every registered accountant, plus every service they've
+  // listed, and combine them for the Search page.
+  const loadProfessionals = useCallback(async (): Promise<Professional[]> => {
     setProfessionalsLoading(true);
-    const { data, error } = await supabase
+
+    const { data: profileRows, error: profileErr } = await supabase
       .from('profiles')
       .select('*')
       .eq('role', 'accountant');
 
-    if (!error && data) {
-      setAllProfessionals(data.map(mapToProfessional));
+    if (profileErr || !profileRows) {
+      setProfessionalsLoading(false);
+      return [];
     }
-    setProfessionalsLoading(false);
-  };
 
-  // If the person already has a valid login session (e.g. they
-  // refreshed the page, or came back the next day), restore it
-  // automatically instead of showing them as a guest.
-  const restoreSession = async () => {
+    let serviceRows: DbService[] = [];
+    const ids = profileRows.map((p) => p.id);
+    if (ids.length > 0) {
+      const { data: svcData } = await supabase
+        .from('services')
+        .select('*')
+        .in('professional_id', ids);
+      serviceRows = svcData || [];
+    }
+
+    const mapped = profileRows.map((row) =>
+      mapToProfessional(row, serviceRows.filter((s) => s.professional_id === row.id))
+    );
+    setAllProfessionals(mapped);
+    setProfessionalsLoading(false);
+    return mapped;
+  }, []);
+
+  // Takes the in-flight loadProfessionals() promise so that, for
+  // professional accounts, we can reuse that already-fetched row
+  // instead of firing a second, near-identical profile query.
+  const restoreSession = useCallback(async (professionalsPromise: Promise<Professional[]>) => {
     const { data: { session } } = await supabase.auth.getSession();
 
     if (!session?.user) {
+      setAuthChecked(true);
+      return;
+    }
+
+    const professionals = await professionalsPromise;
+    const cachedPro = professionals.find((p) => p.id === session.user.id);
+    if (cachedPro) {
+      setUserRole('professional');
+      setCurrentProfessional(cachedPro);
       setAuthChecked(true);
       return;
     }
@@ -85,21 +110,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setUserRole('admin');
       } else if (profile.role === 'accountant') {
         setUserRole('professional');
-        setCurrentProfessional(mapToProfessional(profile));
+        const { data: ownServices } = await supabase
+          .from('services')
+          .select('*')
+          .eq('professional_id', profile.id);
+        setCurrentProfessional(mapToProfessional(profile, ownServices || []));
       } else {
         setUserRole('client');
         setCurrentClient(mapToClient(profile));
       }
     }
     setAuthChecked(true);
-  };
+  }, []);
 
   useEffect(() => {
-    loadProfessionals();
-    restoreSession();
+    const professionalsPromise = loadProfessionals();
+    restoreSession(professionalsPromise);
 
-    // Keep the app in sync if the session changes in another tab,
-    // or expires.
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         setUserRole('guest');
@@ -111,60 +138,65 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return () => {
       listener.subscription.unsubscribe();
     };
-  }, []);
+  }, [loadProfessionals, restoreSession]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     await supabase.auth.signOut();
     setUserRole('guest');
     setCurrentClient(null);
     setCurrentProfessional(null);
-  };
+  }, []);
 
-  const addContract = (newContract: Contract) => {
+  const addContract = useCallback((newContract: Contract) => {
     setContracts((prev) => [newContract, ...prev]);
-  };
+  }, []);
 
-  const updateTaskStatus = (taskId: string, status: "todo" | "in-progress" | "done") => {
+  const updateTaskStatus = useCallback((taskId: string, status: "todo" | "in-progress" | "done") => {
     setTasks((prev) =>
       prev.map((t) => (t.id === taskId ? { ...t, status } : t))
     );
-  };
+  }, []);
 
-  const addTask = (newTask: Task) => {
+  const addTask = useCallback((newTask: Task) => {
     setTasks((prev) => [newTask, ...prev]);
-  };
+  }, []);
 
-  const triggerNotification = (title: string, message: string) => {
+  const triggerNotification = useCallback((title: string, message: string) => {
     setActiveNotification({ title, message });
-  };
+  }, []);
 
-  const clearNotification = () => {
+  const clearNotification = useCallback(() => {
     setActiveNotification(null);
-  };
+  }, []);
+
+  const contextValue = useMemo<AppContextProps>(() => ({
+    userRole,
+    setUserRole,
+    currentClient,
+    setCurrentClient,
+    currentProfessional,
+    setCurrentProfessional,
+    allProfessionals,
+    professionalsLoading,
+    refreshProfessionals: async () => { await loadProfessionals(); },
+    contracts,
+    tasks,
+    addContract,
+    updateTaskStatus,
+    addTask,
+    triggerNotification,
+    activeNotification,
+    clearNotification,
+    logout,
+    authChecked,
+  }), [
+    userRole, currentClient, currentProfessional, allProfessionals, professionalsLoading,
+    loadProfessionals, contracts, tasks, addContract, updateTaskStatus, addTask,
+    triggerNotification, activeNotification, clearNotification, logout, authChecked,
+  ]);
 
   return (
-    <AppContext.Provider
-      value={{
-        userRole,
-        setUserRole,
-        currentClient,
-        setCurrentClient,
-        currentProfessional,
-        setCurrentProfessional,
-        allProfessionals,
-        professionalsLoading,
-        contracts,
-        tasks,
-        addContract,
-        updateTaskStatus,
-        addTask,
-        triggerNotification,
-        activeNotification,
-        clearNotification,
-        logout,
-        authChecked,
-      }}
-    >
+    <AppContext.Provider value={contextValue}>
       {children}
     </AppContext.Provider>
   );

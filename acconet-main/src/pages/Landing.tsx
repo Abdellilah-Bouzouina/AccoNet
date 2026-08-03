@@ -15,7 +15,7 @@ const specialties = [
 
 export const Landing: React.FC = () => {
   const { t, tSpec, direction, language } = useLanguage();
-  const { triggerNotification } = useApp();
+  const { userRole, triggerNotification } = useApp();
   const navigate = useNavigate();
 
   const [keyword,           setKeyword]           = useState('');
@@ -42,7 +42,7 @@ export const Landing: React.FC = () => {
     allWilayas:  { ar: 'كل الولايات (69)',                                                        fr: 'Toutes les wilayas (69)',                                                      en: 'All wilayas (69)'                                                },
     allSpec:     { ar: 'كل التخصصات',                                                             fr: 'Toutes les spécialités',                                                       en: 'All specialties'                                                 },
     searchBtn:   { ar: 'بحث',                                                                     fr: 'Rechercher',                                                                   en: 'Search'                                                          },
-    joinBtn:     { ar: 'انضم كمهني',                                                              fr: 'Rejoindre en tant que pro',                                                    en: 'Join as Professional'                                            },
+    joinBtn:     { ar: 'الانضمام',                                                                fr: 'Rejoindre',                                                                    en: 'Join'                                                            },
     partners:    { ar: 'شركاؤنا الرسميون',                                                        fr: 'Nos partenaires officiels',                                                    en: 'Our Official Partners'                                           },
     partnersSub: { ar: 'معتمدون من الهيئات الوطنية المحاسبية الجزائرية',                          fr: 'Reconnus par les ordres comptables nationaux algériens',                       en: "Recognized by Algeria's national accounting bodies"               },
     availNow:    { ar: 'متاح الآن',                                                               fr: 'Disponible maintenant',                                                        en: 'Available now'                                                   },
@@ -93,12 +93,14 @@ export const Landing: React.FC = () => {
                 {tx('searchBtn')}
                 {direction === 'rtl' ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
               </button>
-              <button
-                onClick={() => navigate('/register')}
-                className="inline-flex items-center gap-2 px-7 py-4 bg-white border border-blue-200 hover:border-brand-primary hover:bg-blue-50 text-slate-700 font-bold text-sm rounded-xl transition-all duration-200"
-              >
-                {tx('joinBtn')}
-              </button>
+              {userRole === 'guest' && (
+                <button
+                  onClick={() => navigate('/register')}
+                  className="inline-flex items-center gap-2 px-7 py-4 bg-white border border-blue-200 hover:border-brand-primary hover:bg-blue-50 text-slate-700 font-bold text-sm rounded-xl transition-all duration-200"
+                >
+                  {tx('joinBtn')}
+                </button>
+              )}
             </div>
 
             <div className="flex flex-wrap gap-6 pt-6 border-t border-blue-100 text-sm font-semibold text-slate-500">

@@ -1,19 +1,22 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { Landing } from './pages/Landing';
-import { Search } from './pages/Search';
-import { ProfessionalProfile } from './pages/ProfessionalProfile';
-import { ClientDashboard } from './pages/ClientDashboard';
-import { ProfessionalDashboard } from './pages/ProfessionalDashboard';
-import { AdminDashboard } from './pages/AdminDashboard';
-import { Tools } from './pages/Tools';
-import { Login } from './pages/Login';
-import { Register } from './pages/Register';
-import { Bell, Info, ShieldAlert, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
+
+const Search = lazy(() => import('./pages/Search').then((m) => ({ default: m.Search })));
+const ProfessionalProfile = lazy(() => import('./pages/ProfessionalProfile').then((m) => ({ default: m.ProfessionalProfile })));
+const ClientDashboard = lazy(() => import('./pages/ClientDashboard').then((m) => ({ default: m.ClientDashboard })));
+const ProfessionalDashboard = lazy(() => import('./pages/ProfessionalDashboard').then((m) => ({ default: m.ProfessionalDashboard })));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard').then((m) => ({ default: m.AdminDashboard })));
+const Tools = lazy(() => import('./pages/Tools').then((m) => ({ default: m.Tools })));
+const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login })));
+const Register = lazy(() => import('./pages/Register').then((m) => ({ default: m.Register })));
+const AccountSettings = lazy(() => import('./pages/AccountSettings').then((m) => ({ default: m.AccountSettings })));
+const ProfessionalProfileEdit = lazy(() => import('./pages/ProfessionalProfileEdit').then((m) => ({ default: m.ProfessionalProfileEdit })));
 
 // A wrapper to handle global notifications / success popup overlays
 const GlobalNotification: React.FC = () => {
@@ -59,18 +62,22 @@ const AppContent: React.FC = () => {
 
         {/* Dynamic page viewport */}
         <main className="flex-grow pt-2">
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/professional/:id" element={<ProfessionalProfile />} />
-            <Route path="/dashboard/client" element={<ClientDashboard />} />
-            <Route path="/dashboard/professional" element={<ProfessionalDashboard />} />
-            <Route path="/dashboard/admin" element={<AdminDashboard />} />
-            <Route path="/tools" element={<Tools />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <Suspense fallback={<div className="flex items-center justify-center py-24 text-slate-400 text-sm">…</div>}>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/professional/:id" element={<ProfessionalProfile />} />
+              <Route path="/dashboard/client" element={<ClientDashboard />} />
+              <Route path="/dashboard/professional" element={<ProfessionalDashboard />} />
+              <Route path="/dashboard/professional/edit" element={<ProfessionalProfileEdit />} />
+              <Route path="/dashboard/admin" element={<AdminDashboard />} />
+              <Route path="/tools" element={<Tools />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/settings" element={<AccountSettings />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
         </main>
 
         {/* Global Success Banner alerts */}

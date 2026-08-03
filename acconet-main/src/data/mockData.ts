@@ -45,6 +45,7 @@ export interface Professional {
   // ADDED THESE TWO FIELDS TO SUPPORT PHONE AND ADDRESS DATA WITHIN THE CARD
   phone?: string;
   address?: Translation;
+  avatarUrl?: string;
 }
 
 export interface Client {

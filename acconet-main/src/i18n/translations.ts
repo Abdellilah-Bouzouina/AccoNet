@@ -81,6 +81,26 @@ export const translations: TranslationDictionary = {
     fr: "Déconnexion",
     en: "Log Out"
   },
+  accountSettingsLink: {
+    ar: "إعدادات الحساب",
+    fr: "Paramètres du compte",
+    en: "Account Settings"
+  },
+  editProfileLink: {
+    ar: "تعديل الملف المهني",
+    fr: "Modifier mon profil",
+    en: "Edit My Profile"
+  },
+  viewMyProfileLink: {
+    ar: "عرض ملفي الشخصي",
+    fr: "Voir mon profil public",
+    en: "View My Profile"
+  },
+  viewProsListButton: {
+    ar: "عرض قائمة المهنيين",
+    fr: "Voir la liste des professionnels",
+    en: "View Professionals List"
+  },
   about: {
     ar: "حول",
     fr: "À propos",

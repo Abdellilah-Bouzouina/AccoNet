@@ -1,7 +1,7 @@
-import { Professional, Client, Translation } from '../data/mockData';
+import { Professional, Client, Translation, Service } from '../data/mockData';
 import { algerianWilayas } from '../data/algerianWilayas';
 
-// This matches exactly the columns in your Supabase "profiles" table.
+// Matches the columns in your Supabase "profiles" table.
 export interface DbProfile {
   id: string;
   role: 'accountant' | 'business' | 'admin';
@@ -14,6 +14,30 @@ export interface DbProfile {
   company_name: string | null;
   rc_number: string | null;
   nif_number: string | null;
+  bio?: string | null;
+  hourly_rate?: number | null;
+  available?: boolean | null;
+  address?: string | null;
+  avatar_url?: string | null;
+  history?: DbHistoryEntry[] | null;
+}
+
+// One entry of a professional's editable experience/history timeline,
+// stored as a jsonb array directly on the "profiles" row (no separate
+// table — it rides along with the same select('*') used everywhere).
+export interface DbHistoryEntry {
+  year: string;
+  title: string;
+  description: string;
+}
+
+// Matches the columns in your Supabase "services" table.
+export interface DbService {
+  id: string;
+  professional_id: string;
+  title: string;
+  description: string | null;
+  price: string | null;
 }
 
 const wilayaTranslation = (wilayaId: number | null): Translation => {
@@ -21,14 +45,17 @@ const wilayaTranslation = (wilayaId: number | null): Translation => {
   return found ? found.name : { ar: 'الجزائر', fr: 'Alger', en: 'Algiers' };
 };
 
-// Turns a raw Supabase "profiles" row (role = accountant) into the
-// same "Professional" shape your Search/Profile pages already expect.
-//
-// NOTE: fields like bio, services, reviews, and history don't exist
-// in the database yet — they default to empty for now. That's the
-// next thing to wire up once you're ready (a proper "professionals"
-// details table, or extra columns).
-export const mapToProfessional = (row: DbProfile): Professional => ({
+// NOTE: bios and service descriptions are written once by the
+// professional, in whichever language they typed them — not
+// separately translated into Arabic/French/English. This just
+// echoes that same text into all three "slots" so it still works
+// with pages that expect a translated {ar, fr, en} object.
+const asTranslation = (text: string | null | undefined): Translation => {
+  const value = text || '';
+  return { ar: value, fr: value, en: value };
+};
+
+export const mapToProfessional = (row: DbProfile, services: DbService[] = []): Professional => ({
   id: row.id,
   name: { ar: row.full_name, fr: row.full_name, en: row.full_name },
   initials: (row.full_name || '??').substring(0, 2).toUpperCase(),
@@ -38,20 +65,29 @@ export const mapToProfessional = (row: DbProfile): Professional => ({
   wilayaName: wilayaTranslation(row.wilaya_id),
   rating: 5.0,
   reviewCount: 0,
-  hourlyRate: 3500,
-  available: true,
+  hourlyRate: row.hourly_rate ?? 3500,
+  available: row.available ?? true,
   yearsExperience: row.years_experience || 0,
   accreditationNumber: row.accreditation_number || '',
   completionRate: 100,
   clientsServed: 0,
-  bio: { ar: '', fr: '', en: '' },
-  services: [],
+  bio: asTranslation(row.bio),
+  address: row.address ? asTranslation(row.address) : undefined,
+  services: services.map((s): Service => ({
+    title: asTranslation(s.title),
+    description: asTranslation(s.description),
+    price: s.price || '',
+  })),
   reviews: [],
-  history: [],
+  history: (row.history || []).map((h) => ({
+    year: h.year,
+    title: asTranslation(h.title),
+    description: asTranslation(h.description),
+  })),
   phone: row.phone || undefined,
+  avatarUrl: row.avatar_url || undefined,
 });
 
-// Same idea, but for a "business" account.
 export const mapToClient = (row: DbProfile): Client => ({
   id: row.id,
   companyName: row.company_name || row.full_name,

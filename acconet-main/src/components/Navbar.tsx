@@ -1,17 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useApp } from '../context/AppContext';
 import { AccoNetLogo } from './AccoNetLogo';
-import { Menu, X, Languages, Search, Cpu, LayoutDashboard, LogOut, ChevronDown } from 'lucide-react';
+import { Menu, X, Languages, Search, Cpu, LayoutDashboard, LogOut, ChevronDown, Settings, UserCog, Eye } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { language, setLanguage, t, direction } = useLanguage();
   const { userRole, currentClient, currentProfessional, logout } = useApp();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen,   setLangOpen]   = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const navigate  = useNavigate();
   const location  = useLocation();
+  const langMenuRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!langOpen && !userMenuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (langOpen && langMenuRef.current && !langMenuRef.current.contains(target)) {
+        setLangOpen(false);
+      }
+      if (userMenuOpen && userMenuRef.current && !userMenuRef.current.contains(target)) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [langOpen, userMenuOpen]);
 
   const isActive = (path: string) =>
     location.pathname === path
@@ -19,6 +39,7 @@ export const Navbar: React.FC = () => {
       : 'text-slate-600 hover:text-brand-primary transition-colors duration-150';
 
   const handleLogout = async () => {
+    setUserMenuOpen(false);
     await logout();
     navigate('/');
     setMobileOpen(false);
@@ -31,6 +52,10 @@ export const Navbar: React.FC = () => {
     if (userRole === 'admin') return 'Admin DGI';
     return '';
   };
+
+  // Accountants aren't searching for themselves — show them a
+  // "browse the directory" label instead of "find a professional."
+  const findProLabel = userRole === 'professional' ? t('viewProsListButton') : t('findProButton');
 
   const topBarText = {
     ar: 'منصة رقمية تربط المهنيين المحاسبيين بالمتعاملين الاقتصاديين عبر 69 ولاية جزائرية',
@@ -66,12 +91,14 @@ export const Navbar: React.FC = () => {
             <div className="hidden md:flex items-center gap-8 text-sm font-semibold">
               <Link to="/search" className={`flex items-center gap-1.5 ${isActive('/search')}`}>
                 <Search className="w-4 h-4" />
-                {t('findProButton')}
+                {findProLabel}
               </Link>
-              <Link to="/tools" className={`flex items-center gap-1.5 ${isActive('/tools')}`}>
-                <Cpu className="w-4 h-4" />
-                {t('toolsLink')}
-              </Link>
+              {userRole !== 'client' && (
+                <Link to="/tools" className={`flex items-center gap-1.5 ${isActive('/tools')}`}>
+                  <Cpu className="w-4 h-4" />
+                  {t('toolsLink')}
+                </Link>
+              )}
               {userRole === 'client' && (
                 <Link to="/dashboard/client" className={`flex items-center gap-1.5 ${isActive('/dashboard/client')}`}>
                   <LayoutDashboard className="w-4 h-4" /> {t('dashboardSidebarTitle')}
@@ -92,7 +119,7 @@ export const Navbar: React.FC = () => {
 
             <div className="hidden md:flex items-center gap-3">
 
-              <div className="relative">
+              <div className="relative" ref={langMenuRef}>
                 <button
                   onClick={() => setLangOpen(!langOpen)}
                   className="flex items-center gap-1.5 px-3 py-2 border border-blue-200 rounded-lg text-sm font-semibold text-slate-600 hover:border-brand-primary hover:text-brand-primary transition bg-white"
@@ -121,17 +148,62 @@ export const Navbar: React.FC = () => {
                   <Link to="/register" className="px-4 py-2 bg-brand-primary text-white rounded-lg text-sm font-bold hover:bg-brand-dark transition shadow-sm">{t('registerLink')}</Link>
                 </div>
               ) : (
-                <div className={`flex items-center gap-3 ${direction === 'rtl' ? 'border-r border-blue-100 pr-3' : 'border-l border-blue-100 pl-3'}`}>
-                  <div className={`leading-none ${direction === 'rtl' ? 'text-right' : 'text-left'}`}>
-                    <p className="text-sm font-bold text-slate-800 max-w-[140px] truncate">{displayName()}</p>
-                    <p className="text-xs text-slate-400 font-mono uppercase mt-0.5">{userRole}</p>
-                  </div>
-                  <div className="w-9 h-9 rounded-xl bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center text-brand-primary font-bold text-sm">
-                    {displayName().slice(0,2).toUpperCase()}
-                  </div>
-                  <button onClick={handleLogout} className="p-2 border border-red-200 text-red-400 hover:bg-red-50 rounded-lg transition" title={t('logout')}>
-                    <LogOut className="w-4 h-4" />
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className={`flex items-center gap-3 ${direction === 'rtl' ? 'border-r border-blue-100 pr-3' : 'border-l border-blue-100 pl-3'} hover:bg-blue-50 rounded-lg py-1.5 pl-1.5 pr-1.5 transition`}
+                    id="navbar_user_menu_btn"
+                  >
+                    <div className={`leading-none ${direction === 'rtl' ? 'text-right' : 'text-left'}`}>
+                      <p className="text-sm font-bold text-slate-800 max-w-[140px] truncate">{displayName()}</p>
+                      <p className="text-xs text-slate-400 font-mono uppercase mt-0.5">{userRole}</p>
+                    </div>
+                    <div className="w-9 h-9 rounded-xl bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center text-brand-primary font-bold text-sm shrink-0">
+                      {displayName().slice(0,2).toUpperCase()}
+                    </div>
+                    <ChevronDown className={`w-3.5 h-3.5 opacity-50 shrink-0 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
+
+                  {userMenuOpen && (
+                    <div className={`absolute top-full mt-2 w-56 bg-white border border-blue-100 rounded-xl shadow-glow py-1.5 z-50 ${direction === 'rtl' ? 'left-0' : 'right-0'}`}>
+                      {userRole === 'professional' && currentProfessional && (
+                        <Link
+                          to={`/professional/${currentProfessional.id}`}
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50 hover:text-brand-primary transition"
+                        >
+                          <Eye className="w-4 h-4 shrink-0" />
+                          {t('viewMyProfileLink')}
+                        </Link>
+                      )}
+                      <Link
+                        to="/settings"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50 hover:text-brand-primary transition"
+                      >
+                        <Settings className="w-4 h-4 shrink-0" />
+                        {t('accountSettingsLink')}
+                      </Link>
+                      {userRole === 'professional' && (
+                        <Link
+                          to="/dashboard/professional/edit"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50 hover:text-brand-primary transition"
+                        >
+                          <UserCog className="w-4 h-4 shrink-0" />
+                          {t('editProfileLink')}
+                        </Link>
+                      )}
+                      <div className="my-1 border-t border-blue-100"></div>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition text-left rtl:text-right"
+                      >
+                        <LogOut className="w-4 h-4 shrink-0" />
+                        {t('logout')}
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -151,12 +223,29 @@ export const Navbar: React.FC = () => {
 
         {mobileOpen && (
           <div className="md:hidden bg-white border-t border-blue-100 px-4 py-4 space-y-2">
-            <Link to="/search"   onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-700 font-semibold hover:bg-blue-50 hover:text-brand-primary"><Search className="w-4 h-4" />{t('findProButton')}</Link>
-            <Link to="/tools"    onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-700 font-semibold hover:bg-blue-50 hover:text-brand-primary"><Cpu    className="w-4 h-4" />{t('toolsLink')}</Link>
+            <Link to="/search"   onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-700 font-semibold hover:bg-blue-50 hover:text-brand-primary"><Search className="w-4 h-4" />{findProLabel}</Link>
+            {userRole !== 'client' && (
+              <Link to="/tools"    onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-700 font-semibold hover:bg-blue-50 hover:text-brand-primary"><Cpu    className="w-4 h-4" />{t('toolsLink')}</Link>
+            )}
             {userRole !== 'guest' && (
-              <Link to={`/dashboard/${userRole}`} onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-700 font-semibold hover:bg-blue-50 hover:text-brand-primary">
-                <LayoutDashboard className="w-4 h-4" />{t('dashboardSidebarTitle')}
-              </Link>
+              <>
+                <Link to={`/dashboard/${userRole}`} onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-700 font-semibold hover:bg-blue-50 hover:text-brand-primary">
+                  <LayoutDashboard className="w-4 h-4" />{t('dashboardSidebarTitle')}
+                </Link>
+                <Link to="/settings" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-700 font-semibold hover:bg-blue-50 hover:text-brand-primary">
+                  <Settings className="w-4 h-4" />{t('accountSettingsLink')}
+                </Link>
+                {userRole === 'professional' && currentProfessional && (
+                  <>
+                    <Link to={`/professional/${currentProfessional.id}`} onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-700 font-semibold hover:bg-blue-50 hover:text-brand-primary">
+                      <Eye className="w-4 h-4" />{t('viewMyProfileLink')}
+                    </Link>
+                    <Link to="/dashboard/professional/edit" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-700 font-semibold hover:bg-blue-50 hover:text-brand-primary">
+                      <UserCog className="w-4 h-4" />{t('editProfileLink')}
+                    </Link>
+                  </>
+                )}
+              </>
             )}
             <div className="pt-3 border-t border-blue-100 grid grid-cols-3 gap-2">
               {(['ar','fr','en'] as const).map(lang => (

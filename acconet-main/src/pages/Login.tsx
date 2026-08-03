@@ -70,8 +70,12 @@ export const Login: React.FC = () => {
       );
       navigate('/dashboard/admin');
     } else if (profile.role === 'accountant') {
+      const { data: ownServices } = await supabase
+        .from('services')
+        .select('*')
+        .eq('professional_id', profile.id);
       setUserRole('professional');
-      setCurrentProfessional(mapToProfessional(profile));
+      setCurrentProfessional(mapToProfessional(profile, ownServices || []));
       triggerNotification('تم التحقق من الدخول', `Logged in as: ${profile.full_name}`);
       navigate('/dashboard/professional');
     } else {

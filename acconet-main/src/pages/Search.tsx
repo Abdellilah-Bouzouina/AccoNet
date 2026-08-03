@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useApp } from '../context/AppContext';
@@ -48,28 +48,30 @@ export const Search: React.FC = () => {
     setSearchParams({});
   };
 
-  const filteredPros = allProfessionals.filter((pro) => {
-    if (keyword) {
-      const kw = keyword.toLowerCase();
-      const matchName = (pro.name.en + pro.name.fr + pro.name.ar).toLowerCase().includes(kw);
-      const matchBio = (pro.bio.en + pro.bio.fr + pro.bio.ar).toLowerCase().includes(kw);
-      const matchSpecialty = pro.specialty.toLowerCase().includes(kw);
-      if (!matchName && !matchBio && !matchSpecialty) return false;
-    }
-    if (selectedWilaya > 0 && pro.wilayaId !== selectedWilaya) return false;
-    if (selectedSpecialty && pro.specialty !== selectedSpecialty) return false;
-    if (pro.rating < minRating) return false;
-    if (onlyAvailable && !pro.available) return false;
-    return true;
-  });
+  const sortedPros = useMemo(() => {
+    const filteredPros = allProfessionals.filter((pro) => {
+      if (keyword) {
+        const kw = keyword.toLowerCase();
+        const matchName = (pro.name.en + pro.name.fr + pro.name.ar).toLowerCase().includes(kw);
+        const matchBio = (pro.bio.en + pro.bio.fr + pro.bio.ar).toLowerCase().includes(kw);
+        const matchSpecialty = pro.specialty.toLowerCase().includes(kw);
+        if (!matchName && !matchBio && !matchSpecialty) return false;
+      }
+      if (selectedWilaya > 0 && pro.wilayaId !== selectedWilaya) return false;
+      if (selectedSpecialty && pro.specialty !== selectedSpecialty) return false;
+      if (pro.rating < minRating) return false;
+      if (onlyAvailable && !pro.available) return false;
+      return true;
+    });
 
-  const sortedPros = [...filteredPros].sort((a, b) => {
-    if (sortBy === 'rating') return b.rating - a.rating;
-    if (sortBy === 'rating-asc') return a.rating - b.rating;
-    if (sortBy === 'experience') return b.yearsExperience - a.yearsExperience;
-    if (sortBy === 'experience-asc') return a.yearsExperience - b.yearsExperience;
-    return 0;
-  });
+    return [...filteredPros].sort((a, b) => {
+      if (sortBy === 'rating') return b.rating - a.rating;
+      if (sortBy === 'rating-asc') return a.rating - b.rating;
+      if (sortBy === 'experience') return b.yearsExperience - a.yearsExperience;
+      if (sortBy === 'experience-asc') return a.yearsExperience - b.yearsExperience;
+      return 0;
+    });
+  }, [allProfessionals, keyword, selectedWilaya, selectedSpecialty, minRating, onlyAvailable, sortBy]);
 
   // True while we're fetching the real accountant list from Supabase,
   // OR while the local filter-change pulse is running.

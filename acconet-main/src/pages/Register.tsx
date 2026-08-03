@@ -235,6 +235,7 @@ export const Register: React.FC = () => {
                     <Phone className="w-4 h-4 text-slate-400 shrink-0" />
                     <input
                       type="text"
+                      dir="ltr"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+213 5XX XX XX XX"

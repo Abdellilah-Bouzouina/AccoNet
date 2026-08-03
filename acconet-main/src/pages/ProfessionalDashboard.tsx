@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useApp } from '../context/AppContext';
-import { 
-  Briefcase, Users, DollarSign, Star, Calendar, 
+import {
+  Briefcase, Users, DollarSign, Star, Calendar,
   CheckSquare, ArrowUpRight, TrendingUp, RefreshCw, Layers,
-  Award, Shield, FileSpreadsheet
+  Award, Shield, FileSpreadsheet, Eye
 } from 'lucide-react';
 import { clients } from '../data/mockData';
 
@@ -72,6 +73,17 @@ export const ProfessionalDashboard: React.FC = () => {
               <span className="text-slate-600">Accreditation Board ID: <strong className="font-mono text-brand-primary">{pro.accreditationNumber}</strong></span>
             </p>
           </div>
+
+          {currentProfessional && (
+            <Link
+              to={`/professional/${currentProfessional.id}`}
+              className="relative z-10 shrink-0 flex items-center gap-1.5 px-4 py-2.5 bg-white border border-brand-primary/30 text-brand-primary text-xs font-mono font-bold uppercase tracking-widest rounded-lg hover:bg-brand-primary/5 transition"
+              id="dashboard_view_my_profile_btn"
+            >
+              <Eye className="w-4 h-4" />
+              {t('viewMyProfileLink')}
+            </Link>
+          )}
         </div>
       </div>
 
