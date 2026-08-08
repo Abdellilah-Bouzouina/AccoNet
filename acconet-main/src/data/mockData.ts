@@ -67,11 +67,15 @@ export interface Contract {
   professionalId: string;
   clientId: string;
   title: Translation;
-  status: "active" | "completed" | "pending";
-  startDate: string;
-  endDate: string;
+  status: "active" | "completed" | "pending" | "declined";
+  startDate: string | null;
+  endDate: string | null;
   value: number; // DZD
   scopeDescription: Translation;
+  // Populated from the Supabase embedded select — the other party's
+  // display info at fetch time, not a permanent snapshot.
+  clientInfo?: { companyName: string; wilayaName: Translation };
+  professionalInfo?: { name: Translation; specialty: Professional['specialty']; initials: string; avatarUrl?: string };
 }
 
 export interface Task {
@@ -334,135 +338,6 @@ export const professionals: Professional[] = [
       }
     ]
   }
-];
-
-export const clients: Client[] = [
-  {
-    id: "c1",
-    companyName: "Lubroil",
-    sector: { ar: "تكنولوجيا المعلومات والبرمجيات", fr: "Technologies de l'information", en: "Information Technology" },
-    wilayaId: 16,
-    wilayaName: { ar: "غليزان", fr: "Relizane", en: "Relizan" },
-    logoInitials: "LO",
-    avatarBg: "bg-slate-700 text-white",
-    NIF: "001816091223455",
-    RC: "16/00-109432B18",
-    activeContracts: ["ct1", "ct4"],
-    pendingTasks: ["tk1", "tk2", "tk5"]
-  },
-  {
-    id: "c2",
-    companyName: "Mitidja Agro Export",
-    sector: { ar: "الفلاحة والصناعة التحويلية", fr: "Agriculture et agroalimentaire", en: "Agriculture & Food Processing" },
-    wilayaId: 9,
-    wilayaName: { ar: "البليدة", fr: "Blida", en: "Blida" },
-    logoInitials: "MA",
-    avatarBg: "bg-emerald-800 text-white",
-    NIF: "001209043224190",
-    RC: "09/00-098412B20",
-    activeContracts: ["ct2"],
-    pendingTasks: ["tk3", "tk4"]
-  },
-  {
-    id: "c3",
-    companyName: "Constantine Pharma Trading",
-    sector: { ar: "الصيدلة والأجهزة الطبية", fr: "Pharmaceutique & Médical", en: "Pharmaceuticals & MedTech" },
-    wilayaId: 25,
-    wilayaName: { ar: "قسنطينة", fr: "Constantine", en: "Constantine" },
-    logoInitials: "CP",
-    avatarBg: "bg-blue-900 text-white",
-    NIF: "001625078912349",
-    RC: "25/00-112345B21",
-    activeContracts: ["ct3"],
-    pendingTasks: ["tk6", "tk7"]
-  },
-  {
-    id: "c4",
-    companyName: "El Bahia Logistics",
-    sector: { ar: "النقل واللوجستيك", fr: "Transport et Logistique", en: "Transportation & Logistics" },
-    wilayaId: 31,
-    wilayaName: { ar: "وهران", fr: "Oran", en: "Oran" },
-    logoInitials: "EB",
-    avatarBg: "bg-amber-700 text-white",
-    NIF: "001431054321908",
-    RC: "31/00-054321B19",
-    activeContracts: ["ct5"],
-    pendingTasks: ["tk8"]
-  }
-];
-
-export const contracts: Contract[] = [
-  {
-    id: "ct1",
-    professionalId: "p1",
-    clientId: "c1",
-    title: { ar: "مرافقة محاسبية وجبائية", fr: "Accompagnement comptable et fiscal ", en: "Accounting and Tax Support " },
-    status: "active",
-    startDate: "2026-01-01",
-    endDate: "2026-12-31",
-    value: 0,
-    scopeDescription: {
-      ar: "مسك الحسابات اليومية بالبرمجية السحابية وتعبئة استمارات G50 ونماذج الضرائب والضمان الاجتماعي وصياغة الميزانية السنوية ومذكرة المبيعات المعفاة.",
-      fr: "Gestion de la comptabilité courante, déclarations G50 mensuelles, déclarations DAS et CNAS/CASNOS, établissement et dépôt de la liasse fiscale de clôture.",
-      en: "Routine accounting records, monthly G50 filings, CNAS/CASNOS social declarations, and preparation & filing of the final corporate fiscal pack."
-    }
-  },
-  {
-    id: "ct2",
-    professionalId: "p4",
-    clientId: "c2",
-    title: { ar: "متابعة وإدارة الأجور والاشتراكات الفلاحية", fr: "Gestion Sociale, Paie et Statuts Coopérative", en: "Coop Social Payroll and Benefits Auditing" },
-    status: "active",
-    startDate: "2026-02-15",
-    endDate: "2027-02-14",
-    value: 300000,
-    scopeDescription: {
-      ar: "حساب كشوف الرواتب الشهرية والاشتراكات للضمان الاجتماعي لأكثر من 30 عاملاً وتقديم التصريحات السنوية للضمان الاجتماعي والضرائب.",
-      fr: "Traitement de la paie mensuelle, cotisations de sécurité sociale pour plus de 30 employés et déclarations réglementaires de fin d'année.",
-      en: "Processing monthly payroll registers and social security contributions for above 30 agricultural employees and executing year-end statutory social returns."
-    }
-  },
-  {
-    id: "ct3",
-    professionalId: "p3",
-    clientId: "c3",
-    title: { ar: "التدقيق المالي ومحافظة الحسابات القانونية", fr: "Commissariat aux Comptes & Certification légale", en: "Statutory Financial Auditing & Official Certification" },
-    status: "active",
-    startDate: "2026-03-01",
-    endDate: "2026-08-31",
-    value: 600000,
-    scopeDescription: {
-      ar: "مراقبة نظام الرقابة الداخلية وإجراء فحص جرد الأصول والمخزونات والصيدلانية والمصادقة على الحسابات السنوية لشركة تجارة الأدوية الجملة.",
-      fr: "Audit légal complet, inventaire des stocks physiques, certification des états de synthèse de l'exercice pour une SARL pharmaceutique.",
-      en: "Full legal audit, physical warehouse inventory checks, and formal certification of financial syntheses for a pharma distribution LLC."
-    }
-  },
-   {
-    id: "ct5",
-    professionalId: "p2",
-    clientId: "c4",
-    title: { ar: "هيكلة الفوترة الدولية والجمارك الميسرة", fr: "Conseil Prix de Transfert et Douanes Logistique", en: "International Invoicing Strategy & Transfer Pricing" },
-    status: "completed",
-    startDate: "2025-06-01",
-    endDate: "2025-12-31",
-    value: 380000,
-    scopeDescription: {
-      ar: "تهيئة النماذج القانونية لأسعار التحويلات والاتفاقيات الدولية والتصدير، وتقليص أداء الجمارك لأسطول النقل اللوجستي الجزائري الكوري.",
-      fr: "Optimisation de la fiscalité transfrontalière, prix de transfert, conformité douanière des cargaisons de l'Ouest vers l'Europe.",
-      en: "Optimization of cross-border VAT flow, transfer pricing reports, and customs compliance for West-Algerian freight shipping to Southern Europe."
-    }
-  }
-];
-
-export const tasks: Task[] = [
-  { id: "tk1", contractId: "ct1", title: { ar: "إعداد وإرسال تصريح الضرائب الشهري G50", fr: "Déclaration G50 mensuelle d'Avril", en: "Monthly G50 Tax declaration for April" }, deadline: "2026-05-20", status: "done", type: "tax-filing" },
-  { id: "tk2", contractId: "ct1", title: { ar: "حساب وإرسال اشتراكات الضمان الاجتماعي CNAS", fr: "Déclaration sociale CNAS mensuelle", en: "Monthly CNAS social declarations" }, deadline: "2026-05-30", status: "in-progress", type: "declaration" },
-  { id: "tk3", contractId: "ct2", title: { ar: "إعداد كشوف المرتبات لعمال الحقول والتحويل", fr: "Calcul des fiches de paie mensuelles agricoles", en: "Agricultural workers monthly payroll registers" }, deadline: "2026-05-31", status: "in-progress", type: "bookkeeping" },
-  { id: "tk4", contractId: "ct2", title: { ar: "تسجيل الموظفين الجدد في صندوق الضمان الاجتماعي", fr: "Immatriculation CNAS des nouveaux saisonniers", en: "CNAS social enrollment for new agricultural seasonals" }, deadline: "2026-05-25", status: "todo", type: "declaration" },
-  { id: "tk5", contractId: "ct1", title: { ar: "التعديل النهائي للميزانية وجدول حسابات النتائج", fr: "La version définitive du budget et du compte des résultats", en: "Final Amendment to the Budget and Statement of Income and Expenses" }, deadline: "2026-04-30", status: "todo", type: "tax-filing" },
-  { id: "tk6", contractId: "ct3", title: { ar: "مراجعة جرد الأدوية والمخازن والتحقق من القيمة", fr: "Audit physique de l'inventaire pharmacie", en: "Physical pharmacy inventory validation and costing review" }, deadline: "2026-05-28", status: "in-progress", type: "audit" },
-  { id: "tk7", contractId: "ct3", title: { ar: "توليد تقرير المراقبة الأولية للجنة الجرد", fr: "Rapport d'audit intermédiaire de conformité", en: "Interim compliance and internal controls audit report" }, deadline: "2026-06-10", status: "todo", type: "audit" },
-  { id: "tk8", contractId: "ct5", title: { ar: "أرشفة وثائق أسعار التحويلات والاتفاقية مع الجمارك", fr: "Classement et archivage final du dossier Douanes", en: "Final sorting and archiving of customs file" }, deadline: "2025-12-28", status: "done", type: "advisory" }
 ];
 
 export const testimonials: Testimonial[] = [

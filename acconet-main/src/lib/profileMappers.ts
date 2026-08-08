@@ -40,7 +40,7 @@ export interface DbService {
   price: string | null;
 }
 
-const wilayaTranslation = (wilayaId: number | null): Translation => {
+export const wilayaTranslation = (wilayaId: number | null): Translation => {
   const found = algerianWilayas.find((w) => w.id === wilayaId);
   return found ? found.name : { ar: 'الجزائر', fr: 'Alger', en: 'Algiers' };
 };
@@ -50,7 +50,7 @@ const wilayaTranslation = (wilayaId: number | null): Translation => {
 // separately translated into Arabic/French/English. This just
 // echoes that same text into all three "slots" so it still works
 // with pages that expect a translated {ar, fr, en} object.
-const asTranslation = (text: string | null | undefined): Translation => {
+export const asTranslation = (text: string | null | undefined): Translation => {
   const value = text || '';
   return { ar: value, fr: value, en: value };
 };

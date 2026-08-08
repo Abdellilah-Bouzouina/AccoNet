@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useApp } from '../context/AppContext';
 import {
   Building2, Users, FileText, CheckCircle2,
-  Calendar, Send, ShieldCheck, Receipt, Wrench,
+  Calendar, Send, ShieldCheck, Wrench,
 } from 'lucide-react';
-import { professionals } from '../data/mockData';
 
 // ── Placeholder tool names (to be replaced with final Arabic names) ──
 const TOOLS = [
@@ -19,30 +19,42 @@ const TOOLS = [
 
 export const ClientDashboard: React.FC = () => {
   const { t, tObj, tSpec, direction, language } = useLanguage();
-  const { currentClient, contracts, tasks, updateTaskStatus, addTask } = useApp();
+  const { userRole, currentClient, contracts, tasks, updateTaskStatus, addTask, authChecked } = useApp();
+  const navigate = useNavigate();
 
   const [newTaskTitle,       setNewTaskTitle]       = useState('');
   const [selectedContractId, setSelectedContractId] = useState('');
+  const [taskSubmitting,     setTaskSubmitting]     = useState(false);
 
-  const clientContracts    = contracts.filter(c => c.clientId === (currentClient?.id || 'c1'));
+  // Only businesses can view their own dashboard.
+  useEffect(() => {
+    if (authChecked && userRole !== 'client') {
+      navigate('/');
+    }
+  }, [authChecked, userRole, navigate]);
+
+  const clientContracts    = currentClient ? contracts.filter(c => c.clientId === currentClient.id) : [];
   const activeContractIds  = clientContracts.map(c => c.id);
   const clientTasks        = tasks.filter(tk => activeContractIds.includes(tk.contractId));
   const pendingTasksCount  = clientTasks.filter(tk => tk.status !== 'done').length;
   const completedTasksCount = clientTasks.filter(tk => tk.status === 'done').length;
 
-  const handleAddTask = (e: React.FormEvent) => {
+  const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTaskTitle.trim() || !selectedContractId) return;
-    addTask({
-      id: `tk_cl_${Date.now()}`,
+    if (!newTaskTitle.trim() || !selectedContractId || taskSubmitting) return;
+
+    setTaskSubmitting(true);
+    await addTask({
       contractId: selectedContractId,
-      title: { ar: newTaskTitle, fr: newTaskTitle, en: newTaskTitle },
+      title: newTaskTitle,
       deadline: new Date(Date.now() + 7 * 86_400_000).toISOString().split('T')[0],
-      status: 'todo',
       type: 'bookkeeping',
     });
+    setTaskSubmitting(false);
     setNewTaskTitle('');
   };
+
+  if (!currentClient) return null;
 
   const toolLabel = (tool: typeof TOOLS[0]) =>
     tool.label[language as 'ar' | 'fr' | 'en'] ?? tool.label.ar;
@@ -61,12 +73,12 @@ export const ClientDashboard: React.FC = () => {
             </span>
             <h1 className="font-serif font-bold text-slate-800 text-2xl sm:text-3xl leading-snug">
               {t('clientWelcome')}{' '}
-              <span className="text-brand-primary italic">{currentClient?.companyName || 'Dzair Tech Link'}</span>
+              <span className="text-brand-primary italic">{currentClient.companyName}</span>
             </h1>
             <p className="text-sm text-slate-400 flex flex-wrap items-center gap-3 font-mono">
-              <span>NIF: <strong className="text-brand-primary">{currentClient?.NIF}</strong></span>
+              <span>NIF: <strong className="text-brand-primary">{currentClient.NIF}</strong></span>
               <span className="text-slate-200">|</span>
-              <span>{tObj(currentClient?.wilayaName)}</span>
+              <span>{tObj(currentClient.wilayaName)}</span>
             </p>
           </div>        
         </div>
@@ -116,7 +128,7 @@ export const ClientDashboard: React.FC = () => {
             ) : (
               <div className="space-y-4">
                 {clientContracts.map(con => {
-                  const pro = professionals.find(p => p.id === con.professionalId);
+                  const pro = con.professionalInfo;
                   const tasksForContract = clientTasks.filter(tk => tk.contractId === con.id);
                   const doneCount = tasksForContract.filter(tk => tk.status === 'done').length;
                   const progress = tasksForContract.length ? Math.round((doneCount / tasksForContract.length) * 100) : 0;
@@ -296,29 +308,6 @@ export const ClientDashboard: React.FC = () => {
                   </div>
                 );
               })}
-            </div>
-          </div>
-
-          {/* Recent actions */}
-          <div className="bg-white border border-blue-100 rounded-2xl p-6 shadow-classic space-y-4">
-            <h2 className="font-serif font-semibold text-slate-800 flex items-center gap-2 pb-2 border-b border-blue-100">
-              <Receipt className="w-5 h-5 text-brand-primary" />
-              {t('recentActionsLabel')}
-            </h2>
-            <div className="space-y-4 text-sm">
-              {[
-                { dot: 'bg-brand-primary', text: language === 'ar' ? 'عرض عقد من Layla Yakoubi' : 'Proposition de contrat — Layla Yakoubi', time: '2026-05-20 14:02' },
-                { dot: 'bg-amber-400',     text: language === 'ar' ? 'رفع تقرير G50 — Sofiane Benamara' : 'Rapport G50 chargé — Sofiane Benamara', time: '2026-05-18 10:15' },
-                { dot: 'bg-indigo-400',    text: language === 'ar' ? 'جلسة استشارة ضريبية' : 'Consultation fiscale planifiée', time: '2026-05-10 11:30' },
-              ].map((item, i) => (
-                <div key={i} className="flex gap-3 items-start">
-                  <span className={`w-2 h-2 rounded-full ${item.dot} mt-1.5 shrink-0`} />
-                  <div>
-                    <p className="text-slate-700">{item.text}</p>
-                    <p className="text-xs text-slate-400 font-mono mt-0.5">{item.time}</p>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>

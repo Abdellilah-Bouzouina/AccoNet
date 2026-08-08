@@ -3,7 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useApp } from '../context/AppContext';
 import { AccoNetLogo } from './AccoNetLogo';
-import { Menu, X, Languages, Search, Cpu, LayoutDashboard, LogOut, ChevronDown, Settings, UserCog, Eye } from 'lucide-react';
+import { NotificationBell } from './NotificationBell';
+import { Menu, X, Languages, Search, Cpu, LayoutDashboard, LogOut, ChevronDown, Settings, UserCog, Eye, MessageSquare } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { language, setLanguage, t, direction } = useLanguage();
@@ -109,6 +110,11 @@ export const Navbar: React.FC = () => {
                   <LayoutDashboard className="w-4 h-4" /> {t('dashboardSidebarTitle')}
                 </Link>
               )}
+              {(userRole === 'client' || userRole === 'professional') && (
+                <Link to="/messages" className={`flex items-center gap-1.5 ${isActive('/messages')}`}>
+                  <MessageSquare className="w-4 h-4" /> {t('messagesLink')}
+                </Link>
+              )}
               {userRole === 'admin' && (
                 <Link to="/dashboard/admin" className={`flex items-center gap-1.5 text-amber-600 font-bold ${isActive('/dashboard/admin')}`}>
                   <LayoutDashboard className="w-4 h-4" />
@@ -118,6 +124,8 @@ export const Navbar: React.FC = () => {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
+
+              {(userRole === 'client' || userRole === 'professional') && <NotificationBell />}
 
               <div className="relative" ref={langMenuRef}>
                 <button
@@ -209,6 +217,7 @@ export const Navbar: React.FC = () => {
             </div>
 
             <div className="md:hidden flex items-center gap-2">
+              {(userRole === 'client' || userRole === 'professional') && <NotificationBell />}
               <button onClick={() => setLanguage(language === 'ar' ? 'fr' : language === 'fr' ? 'en' : 'ar')}
                 className="px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm font-bold text-slate-600 uppercase">
                 {language}
@@ -235,6 +244,11 @@ export const Navbar: React.FC = () => {
                 <Link to="/settings" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-700 font-semibold hover:bg-blue-50 hover:text-brand-primary">
                   <Settings className="w-4 h-4" />{t('accountSettingsLink')}
                 </Link>
+                {(userRole === 'client' || userRole === 'professional') && (
+                  <Link to="/messages" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-700 font-semibold hover:bg-blue-50 hover:text-brand-primary">
+                    <MessageSquare className="w-4 h-4" />{t('messagesLink')}
+                  </Link>
+                )}
                 {userRole === 'professional' && currentProfessional && (
                   <>
                     <Link to={`/professional/${currentProfessional.id}`} onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-700 font-semibold hover:bg-blue-50 hover:text-brand-primary">

@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useApp } from '../context/AppContext';
-import { Contract } from '../data/mockData';
-import { 
-  Star, MapPin, Award, CheckCircle, Mail, DollarSign, 
+import { findOrCreateConversation, sendMessage } from '../lib/messaging';
+import {
+  Star, MapPin, Award, CheckCircle, Mail, DollarSign,
   ChevronRight, Calendar, UserCheck, MessageSquare, AlertCircle, X,
-  ShieldAlert, ShieldCheck, CheckCircle2, BookmarkCheck, Inbox
+  ShieldAlert, ShieldCheck, CheckCircle2, BookmarkCheck, Inbox, Loader2
 } from 'lucide-react';
 
 export const ProfessionalProfile: React.FC = () => {
@@ -15,7 +15,7 @@ export const ProfessionalProfile: React.FC = () => {
   const { t, tSpec, tObj, direction, language } = useLanguage();
   const {
     allProfessionals, addContract,
-    triggerNotification, currentClient
+    triggerNotification, currentClient, userRole
   } = useApp();
 
   const tx = (ar: string, fr: string, en: string) =>
@@ -35,9 +35,13 @@ export const ProfessionalProfile: React.FC = () => {
   const [contractTitle, setContractTitle] = useState('');
   const [proposedBudget, setProposedBudget] = useState('');
   const [scopeDetails, setScopeDetails] = useState('');
+  const [hireLoading, setHireLoading] = useState(false);
+  const [hireError, setHireError] = useState<string | null>(null);
 
   // Interactive MessageBox State
   const [msgText, setMsgText] = useState('');
+  const [msgLoading, setMsgLoading] = useState(false);
+  const [msgError, setMsgError] = useState<string | null>(null);
 
   if (!pro) {
     return (
@@ -56,48 +60,92 @@ export const ProfessionalProfile: React.FC = () => {
     );
   }
 
-  const handleHireSubmit = (e: React.FormEvent) => {
+  // Guests (and non-clients) can't hire or message — send them to log in
+  // as a business account instead of silently opening a modal that has
+  // no real account to attach the request to.
+  const requireClientLogin = () => {
+    triggerNotification(
+      tx('يلزم تسجيل الدخول', 'Connexion requise', 'Login required'),
+      tx('يرجى تسجيل الدخول كحساب مؤسسة للتوظيف أو التواصل مع المهنيين.', 'Veuillez vous connecter avec un compte entreprise pour embaucher ou contacter un professionnel.', 'Please log in with a business account to hire or contact professionals.')
+    );
+    navigate('/login');
+  };
+
+  const openHireModal = () => {
+    if (userRole !== 'client') { requireClientLogin(); return; }
+    setHireError(null);
+    setHireModalOpen(true);
+  };
+
+  const openMessageModal = () => {
+    if (userRole !== 'client') { requireClientLogin(); return; }
+    setMsgError(null);
+    setMsgModalOpen(true);
+  };
+
+  const handleHireSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!contractTitle) return;
+    if (!contractTitle || !currentClient) return;
 
-    // Build static contract instance
-    const newContractVal: Contract = {
-      id: `ct_custom_${Date.now()}`,
+    setHireLoading(true);
+    setHireError(null);
+
+    const { error } = await addContract({
       professionalId: pro.id,
-      clientId: currentClient?.id || 'c1',
-      title: { ar: contractTitle, fr: contractTitle, en: contractTitle },
-      status: 'active',
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: '2026-12-31',
+      title: contractTitle,
+      scopeDescription: scopeDetails || tx('مرافقة محاسبية دورية محددة', 'Prestations de services comptables sur-mesure', 'Bespoke professional financial advisory'),
       value: Number(proposedBudget) || (pro.hourlyRate * 30),
-      scopeDescription: {
-        ar: scopeDetails || "مرافقة محاسبية دورية محددة",
-        fr: scopeDetails || "Prestations de services comptables sur-mesure",
-        en: scopeDetails || "Bespoke professional financial advisory"
-      }
-    };
+    });
 
-    addContract(newContractVal);
+    setHireLoading(false);
+
+    if (error) {
+      setHireError(error);
+      return;
+    }
+
     setHireModalOpen(false);
+    setContractTitle('');
+    setProposedBudget('');
+    setScopeDetails('');
 
-    // Trigger success notification
     triggerNotification(
       t('alertHireSuccessTitle'),
       `${t('alertHireSuccessBody')} (Expert: ${tObj(pro.name)})`
     );
 
-    // Redirect to Client Dashboard
     navigate('/dashboard/client');
   };
 
-  const handleMsgSubmit = (e: React.FormEvent) => {
+  const handleMsgSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!msgText.trim() || !currentClient) return;
+
+    setMsgLoading(true);
+    setMsgError(null);
+
+    const { data: convo, error: convoError } = await findOrCreateConversation(pro.id, currentClient.id);
+    if (convoError || !convo) {
+      setMsgLoading(false);
+      setMsgError(convoError?.message || tx('تعذر بدء المحادثة.', "Impossible de démarrer la conversation.", 'Could not start the conversation.'));
+      return;
+    }
+
+    const { error: msgErr } = await sendMessage(convo.id, currentClient.id, msgText.trim());
+    setMsgLoading(false);
+
+    if (msgErr) {
+      setMsgError(msgErr.message);
+      return;
+    }
+
     setMsgModalOpen(false);
     setMsgText('');
     triggerNotification(
       t('alertMessageSuccessTitle'),
       t('alertMessageSuccessBody')
     );
+    navigate(`/messages?c=${convo.id}`);
   };
 
   return (
@@ -365,8 +413,8 @@ export const ProfessionalProfile: React.FC = () => {
             </div>
 
             <div className="space-y-2.5 pt-2">
-              <button 
-                onClick={() => setHireModalOpen(true)}
+              <button
+                onClick={openHireModal}
                 className="w-full py-3 bg-brand-primary hover:bg-brand-dark text-slate-900 text-xs font-mono uppercase tracking-widest transition cursor-pointer flex items-center justify-center gap-1.5"
                 id="profile_hire_now_btn"
               >
@@ -374,8 +422,8 @@ export const ProfessionalProfile: React.FC = () => {
                 {t('hireMeNow')}
               </button>
 
-              <button 
-                onClick={() => setMsgModalOpen(true)}
+              <button
+                onClick={openMessageModal}
                 className="w-full py-3 bg-white border border-blue-100 rounded-xl hover:bg-blue-50 text-slate-200 text-xs font-mono uppercase tracking-widest cursor-pointer transition flex items-center justify-center gap-1.5"
                 id="profile_send_message_btn"
               >
@@ -413,6 +461,13 @@ export const ProfessionalProfile: React.FC = () => {
             </div>
 
             <form onSubmit={handleHireSubmit} className="p-6 space-y-4 text-left rtl:text-right">
+
+              {hireError && (
+                <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>{hireError}</span>
+                </div>
+              )}
 
               <div className="space-y-1.5">
                 <label className="block text-xs font-mono font-bold text-slate-600 uppercase tracking-widest">
@@ -474,9 +529,11 @@ export const ProfessionalProfile: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-brand-primary hover:bg-brand-dark text-white font-mono uppercase tracking-widest cursor-pointer rounded-lg"
+                  disabled={hireLoading}
+                  className="px-5 py-2.5 bg-brand-primary hover:bg-brand-dark disabled:opacity-60 text-white font-mono uppercase tracking-widest cursor-pointer rounded-lg flex items-center gap-1.5"
                   id="confirm_hire_modal_btn"
                 >
+                  {hireLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   {tx('إرسال طلب التوظيف', "ENVOYER LA PROPOSITION", 'SUBMIT ENGAGEMENT LETTER')}
                 </button>
               </div>
@@ -506,6 +563,13 @@ export const ProfessionalProfile: React.FC = () => {
 
             <form onSubmit={handleMsgSubmit} className="p-6 space-y-4 text-left rtl:text-right">
 
+              {msgError && (
+                <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>{msgError}</span>
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <label className="block text-xs font-mono font-bold text-slate-600 uppercase tracking-widest">
                   {tx('اكتب استفسارك', 'Écrivez votre message', 'Write Your Instruction / Query')}
@@ -530,9 +594,11 @@ export const ProfessionalProfile: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-brand-primary hover:bg-brand-dark text-white font-mono uppercase tracking-widest cursor-pointer rounded-lg"
+                  disabled={msgLoading}
+                  className="px-5 py-2.5 bg-brand-primary hover:bg-brand-dark disabled:opacity-60 text-white font-mono uppercase tracking-widest cursor-pointer rounded-lg flex items-center gap-1.5"
                   id="confirm_message_modal_btn"
                 >
+                  {msgLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   {tx('إرسال الاستفسار', 'ENVOYER', 'SEND ENQUIRY')}
                 </button>
               </div>

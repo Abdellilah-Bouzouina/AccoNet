@@ -96,6 +96,11 @@ export const translations: TranslationDictionary = {
     fr: "Voir mon profil public",
     en: "View My Profile"
   },
+  messagesLink: {
+    ar: "الرسائل",
+    fr: "Messagerie",
+    en: "Messages"
+  },
   viewProsListButton: {
     ar: "عرض قائمة المهنيين",
     fr: "Voir la liste des professionnels",
@@ -501,13 +506,13 @@ export const translations: TranslationDictionary = {
   },
   proStatsEarnings: {
     ar: "أرباح الشهر المتوقعة",
-    fr: "Honoraires du Mois",
+    fr: "Honoraires Prévisionnels du Mois",
     en: "Projected Month Earnings"
   },
   taskInboxTitle: {
     ar: "مركز إدارة المهام والتصريحات للعملاء",
-    fr: "Boîte de réception des tâches",
-    en: "Client Tasks Inbox"
+    fr: "Centre de gestion des tâches et déclarations des clients",
+    en: "Client Task & Filing Management Center"
   },
   earningsBarChartTitle: {
     ar: "معدل النمو الشهري المكتسب (دج)",

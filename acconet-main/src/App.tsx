@@ -17,6 +17,7 @@ const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login
 const Register = lazy(() => import('./pages/Register').then((m) => ({ default: m.Register })));
 const AccountSettings = lazy(() => import('./pages/AccountSettings').then((m) => ({ default: m.AccountSettings })));
 const ProfessionalProfileEdit = lazy(() => import('./pages/ProfessionalProfileEdit').then((m) => ({ default: m.ProfessionalProfileEdit })));
+const Messages = lazy(() => import('./pages/Messages').then((m) => ({ default: m.Messages })));
 
 // A wrapper to handle global notifications / success popup overlays
 const GlobalNotification: React.FC = () => {
@@ -75,6 +76,7 @@ const AppContent: React.FC = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/settings" element={<AccountSettings />} />
+              <Route path="/messages" element={<Messages />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
