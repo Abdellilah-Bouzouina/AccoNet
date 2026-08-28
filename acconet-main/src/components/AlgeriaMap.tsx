@@ -219,7 +219,7 @@ export const AlgeriaMap: React.FC<AlgeriaMapProps> = ({ className = '', highligh
 
       {/* ── WILAYA COUNT BADGE ── */}
       <rect x="310" y="268" width="160" height="52" rx="10" fill="#1D4ED8" opacity="0.08" />
-      <text x="390" y="292" textAnchor="middle" fontSize="28" fill="#1D4ED8" fontFamily="sans-serif" fontWeight="900">58</text>
+      <text x="390" y="292" textAnchor="middle" fontSize="28" fill="#1D4ED8" fontFamily="sans-serif" fontWeight="900">69</text>
       <text x="390" y="312" textAnchor="middle" fontSize="12" fill="#3B82F6" fontFamily="'IBM Plex Sans Arabic', sans-serif">ولاية</text>
 
       {/* ── MEDITERRANEAN SEA LABEL ── */}

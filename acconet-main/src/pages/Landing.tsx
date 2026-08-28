@@ -1,31 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useApp } from '../context/AppContext';
-import { algerianWilayas } from '../data/algerianWilayas';
-import { Search, ArrowLeft, ArrowRight, MapPin, Sparkles, ShieldCheck } from 'lucide-react';
-
-const specialties = [
-  { key: 'certified-accountant',  icon: '💎' },
-  { key: 'chartered-accountant',  icon: '🏛️' },
-  { key: 'statutory-auditor',     icon: '📑' },
-  { key: 'tax-consultant',        icon: '⚖️' },
-  { key: 'judicial-expert',       icon: '🔎' },
-];
+import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 
 export const Landing: React.FC = () => {
-  const { t, tSpec, direction, language } = useLanguage();
+  const { t, direction, language } = useLanguage();
   const { userRole, triggerNotification } = useApp();
   const navigate = useNavigate();
-
-  const [keyword,           setKeyword]           = useState('');
-  const [selectedWilaya,    setSelectedWilaya]    = useState('0');
-  const [selectedSpecialty, setSelectedSpecialty] = useState('');
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    navigate(`/search?keyword=${encodeURIComponent(keyword)}&wilaya=${selectedWilaya}&specialty=${selectedSpecialty}`);
-  };
 
   const handleContact = () => {
     triggerNotification(
@@ -35,28 +17,42 @@ export const Landing: React.FC = () => {
   };
 
   const ui = {
-    heroTitle:   { ar: 'جد أفضل المهنيين من مجال المحاسبة في الجزائر',                          fr: 'Trouvez les meilleurs professionnels comptables en Algérie',                    en: "Find Algeria's Best Accounting Professionals"              },
     heroSub:     { ar: 'منصة تربط بين المهنيين والمتعاملين الاقتصاديين عبر 69 ولاية',           fr: 'Une plateforme reliant professionnels et opérateurs économiques sur 69 wilayas', en: 'Platform connecting professionals and businesses across 69 wilayas' },
-    searchTitle: { ar: 'ابحث عن مهني محاسب',                                                     fr: 'Rechercher un professionnel',                                                  en: 'Find a Professional'                                             },
-    searchSub:   { ar: 'ابحث بالاسم أو التخصص أو الولاية',                                       fr: 'Recherchez par nom, spécialité ou wilaya',                                     en: 'Search by name, specialty or wilaya'                              },
-    allWilayas:  { ar: 'كل الولايات (69)',                                                        fr: 'Toutes les wilayas (69)',                                                      en: 'All wilayas (69)'                                                },
-    allSpec:     { ar: 'كل التخصصات',                                                             fr: 'Toutes les spécialités',                                                       en: 'All specialties'                                                 },
-    searchBtn:   { ar: 'بحث',                                                                     fr: 'Rechercher',                                                                   en: 'Search'                                                          },
     joinBtn:     { ar: 'الانضمام',                                                                fr: 'Rejoindre',                                                                    en: 'Join'                                                            },
-    partners:    { ar: 'شركاؤنا الرسميون',                                                        fr: 'Nos partenaires officiels',                                                    en: 'Our Official Partners'                                           },
     partnersSub: { ar: 'معتمدون من الهيئات الوطنية المحاسبية الجزائرية',                          fr: 'Reconnus par les ordres comptables nationaux algériens',                       en: "Recognized by Algeria's national accounting bodies"               },
     availNow:    { ar: 'متاح الآن',                                                               fr: 'Disponible maintenant',                                                        en: 'Available now'                                                   },
     contactBtn:  { ar: 'تواصل مع المهني',                                                         fr: 'Contacter le professionnel',                                                   en: 'Contact Professional'                                            },
-    statPros:    { ar: '+120 مهني معتمد',                                                         fr: '+120 Professionnels agréés',                                                   en: '+120 Certified Professionals'                                    },
-    stat69:      { ar: '69 ولاية مغطاة',                                                          fr: '69 Wilayas couvertes',                                                         en: '69 Wilayas covered'                                              },
-    statBiz:     { ar: '+500 مؤسسة موكلة',                                                        fr: '+500 Entreprises clientes',                                                    en: '+500 Client companies'                                           },
-    mapBadge:    { ar: '69 ولاية — تغطية شاملة',                                                  fr: '69 Wilayas — Couverture nationale',                                            en: '69 Wilayas — National Coverage'                                  },
-    partner:     { ar: 'شريك',                                                                    fr: 'Partenaire',                                                                   en: 'Partner'                                                         },
+    valuePropTitle:  { ar: 'تسهيل الوصول إلى المهنيين',            fr: 'Un accès facilité aux professionnels',                   en: 'Easy Access to Professionals' },
+    valuePropBody:   {
+      ar: 'نربطكم بأفضل المهنيين المعتمدين في مجال المحاسبة في الجزائر، مع عقود آمنة على المنصة وسهولة في العمل ومتابعة المهام.',
+      fr: 'Nous vous connectons aux meilleurs professionnels agréés en comptabilité en Algérie, avec des contrats sécurisés sur la plateforme, une gestion simplifiée et un suivi des tâches.',
+      en: 'We connect you with the best certified accounting professionals in Algeria, with secure on-platform contracts, streamlined collaboration, and task tracking.',
+    },
+    exploreServicesBtn: { ar: 'استكشف المهنيين',        fr: 'Découvrir les professionnels',        en: 'Explore Professionals'        },
+    sectionLabelClients: { ar: 'المتعاملون الاقتصاديون', fr: 'Opérateurs Économiques', en: 'Economic Operators' },
+    sectionLabelPros:    { ar: 'المهنيون',                fr: 'Professionnels',         en: 'Professionals' },
+    proSpaceTitle: { ar: 'فضاء خاص لتسهيل العمل',            fr: 'Un espace dédié pour faciliter votre travail',            en: 'A Dedicated Space To Streamline Your Work' },
+    proSpaceBody:  {
+      ar: 'نوفر للمهنيين فضاء لعرض خدماتهم والوصول إلى الزبائن، مع تسهيل عملية إدارة مختلف المهام والتصريحات الجبائية وزيادة الإنتاجية في العمل.',
+      fr: 'Nous offrons aux professionnels un espace pour présenter leurs services et accéder aux clients, tout en facilitant la gestion des tâches et des déclarations fiscales et en augmentant leur productivité.',
+      en: 'We give professionals a space to showcase their services and reach clients, while simplifying the management of tasks and tax filings and boosting productivity.',
+    },
+    joinAsProBtn: { ar: 'الالتحاق كمهني',        fr: 'Rejoindre en tant que professionnel',        en: 'Join as a Professional' },
+    coverageLabel: { ar: 'التغطية الوطنية', fr: 'Couverture Nationale', en: 'National Coverage' },
+    coverageTitle: { ar: 'تغطية شاملة لكامل التراب الوطني',            fr: 'Une couverture nationale complète',            en: 'Full Nationwide Coverage' },
+    coverageBody:  {
+      ar: 'منصتنا حاضرة في جميع ولايات الجزائر الـ69، من الشمال إلى أقصى الجنوب، لنوفر لكم الوصول إلى أفضل المهنيين المحاسبيين أينما كنتم.',
+      fr: "Notre plateforme est présente dans les 69 wilayas d'Algérie, du nord au grand sud, pour vous donner accès aux meilleurs professionnels comptables où que vous soyez.",
+      en: "Our platform is present across all 69 wilayas of Algeria, from the north to the far south, giving you access to the best accounting professionals wherever you are.",
+    },
   };
   const tx = (key: keyof typeof ui) => ui[key][language] || ui[key].ar;
 
-  const wilayaName = (w: typeof algerianWilayas[0]) =>
-    language === 'ar' ? w.name.ar : language === 'fr' ? w.name.fr : w.name.en;
+  const heroTitleParts = {
+    ar: { before: 'أوجد أفضل ',           highlight: 'المهنيين',   after: ' في مجال المحاسبة بالجزائر' },
+    fr: { before: 'Trouvez les meilleurs ', highlight: 'professionnels', after: ' comptables en Algérie' },
+    en: { before: "Find Algeria's Best ",   highlight: 'Accounting',     after: ' Professionals' },
+  } as const;
 
   return (
     <div className="bg-[#F8FAFF] min-h-screen" dir={direction}>
@@ -64,7 +60,7 @@ export const Landing: React.FC = () => {
       {/* ══════════════════════════════════════════
           1. HERO
       ══════════════════════════════════════════ */}
-      <section className="relative overflow-hidden py-16 md:py-28 px-4 sm:px-6 lg:px-8 border-b border-blue-100">
+      <section className="relative overflow-hidden py-16 md:py-28 px-4 sm:px-6 lg:px-8">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-brand-primary/4 rounded-full blur-[140px] pointer-events-none" />
         <div className="absolute top-1/2 right-0 w-[300px] h-[300px] bg-blue-200/20 rounded-full blur-[100px] pointer-events-none" />
 
@@ -78,47 +74,34 @@ export const Landing: React.FC = () => {
             </span>
 
             <h1 className="font-serif font-black text-slate-900 leading-[1.12] tracking-tight">
-              {tx('heroTitle')}
+              {heroTitleParts[language].before}
+              <span className="text-brand-primary">{heroTitleParts[language].highlight}</span>
+              {heroTitleParts[language].after}
             </h1>
 
             <p className="text-lg text-slate-500 leading-relaxed max-w-xl">
               {tx('heroSub')}
             </p>
 
-            <div className="flex flex-wrap gap-4">
-              <button
-                onClick={() => navigate('/search')}
-                className="inline-flex items-center gap-2 px-7 py-4 bg-brand-primary hover:bg-brand-dark text-white font-bold text-sm rounded-xl shadow-glow hover:shadow-none transition-all duration-200"
-              >
-                {tx('searchBtn')}
-                {direction === 'rtl' ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
-              </button>
-              {userRole === 'guest' && (
+            {userRole === 'guest' && (
+              <div className="flex flex-wrap gap-4">
                 <button
                   onClick={() => navigate('/register')}
-                  className="inline-flex items-center gap-2 px-7 py-4 bg-white border border-blue-200 hover:border-brand-primary hover:bg-blue-50 text-slate-700 font-bold text-sm rounded-xl transition-all duration-200"
+                  className="inline-flex items-center gap-2 px-7 py-4 bg-brand-primary hover:bg-brand-dark text-white font-bold text-sm rounded-xl shadow-glow hover:shadow-none transition-all duration-200"
                 >
                   {tx('joinBtn')}
+                  {direction === 'rtl' ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
                 </button>
-              )}
-            </div>
-
-            <div className="flex flex-wrap gap-6 pt-6 border-t border-blue-100 text-sm font-semibold text-slate-500">
-              {(['statPros', 'stat69', 'statBiz'] as const).map(k => (
-                <span key={k} className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-brand-primary shrink-0" />
-                  {tx(k)}
-                </span>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
 
-          {/* Accounting Illustration */}
+          {/* Hero Illustration */}
           <div className="lg:col-span-5 flex justify-center items-center">
             <img
-              src="/assets/Accounting_Illustration.svg"
-              alt="Accounting Illustration"
-              className="w-full max-w-lg drop-shadow-lg"
+              src="/assets/Hero_Illustration.svg"
+              alt="Hero Illustration"
+              className="w-full max-w-lg animate-float drop-shadow-lg"
             />
           </div>
 
@@ -126,154 +109,167 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* ══════════════════════════════════════════
-          2. SEARCH BAR
+          2. VALUE PROPOSITION
       ══════════════════════════════════════════ */}
-      <section className="py-14 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8 space-y-2">
-            <h2 className="font-serif font-black text-slate-800">{tx('searchTitle')}</h2>
-            <p className="text-slate-500">{tx('searchSub')}</p>
+      <section className="px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+
+          <div className="space-y-6 text-left rtl:text-right">
+            <div className="flex items-center gap-3">
+              <span className="px-3 py-1.5 bg-brand-light text-brand-primary text-xs font-mono font-bold uppercase tracking-wider rounded">
+                {tx('sectionLabelClients')}
+              </span>
+              <span className="w-10 h-px bg-brand-primary/40" />
+            </div>
+
+            <h2 className="font-serif font-black text-slate-900 leading-tight">
+              {tx('valuePropTitle')}
+            </h2>
+
+            <div className="border border-blue-200 rounded-2xl p-5 bg-white shadow-soft">
+              <p className="text-slate-500 leading-relaxed">
+                {tx('valuePropBody')}
+              </p>
+            </div>
+
+            <button
+              onClick={() => navigate('/search')}
+              className="inline-flex items-center gap-2 px-6 py-3 border border-blue-200 hover:border-brand-primary hover:bg-blue-50 rounded-xl text-slate-700 font-bold text-sm transition"
+            >
+              {tx('exploreServicesBtn')}
+            </button>
           </div>
 
-          <form onSubmit={handleSearch} className="bg-white border border-blue-200 rounded-2xl p-5 shadow-glow space-y-4">
-            {/* Keyword */}
-            <div className="relative">
-              <Search className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-brand-primary pointer-events-none ${direction === 'rtl' ? 'right-4' : 'left-4'}`} />
-              <input
-                type="text"
-                value={keyword}
-                onChange={e => setKeyword(e.target.value)}
-                className={`w-full border border-blue-200 bg-blue-50 rounded-xl text-slate-700 focus:border-brand-primary focus:bg-white ${direction === 'rtl' ? 'pr-12 pl-4' : 'pl-12 pr-4'}`}
-              />
+          {/* ── Partner Logos (replaces the illustration) ── */}
+          <div className="space-y-6">
+            <div className="text-left rtl:text-right">
+              <p className="text-slate-500 text-sm">{tx('partnersSub')}</p>
             </div>
 
-            {/* Wilaya + Specialty + Button */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="relative">
-                <MapPin className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-brand-primary pointer-events-none ${direction === 'rtl' ? 'right-4' : 'left-4'}`} />
-                <select
-                  value={selectedWilaya}
-                  onChange={e => setSelectedWilaya(e.target.value)}
-                  className={`w-full border border-blue-200 bg-blue-50 rounded-xl text-slate-700 focus:border-brand-primary ${direction === 'rtl' ? 'pr-12' : 'pl-12'}`}
-                >
-                  <option value="0">{tx('allWilayas')}</option>
-                  {algerianWilayas.map(w => (
-                    <option key={w.id} value={w.id}>{w.code} — {wilayaName(w)}</option>
-                  ))}
-                </select>
+            <div className="space-y-4">
+
+              {/* CNCC — dark background */}
+              <div className="flex items-center gap-4 p-4 bg-black rounded-xl shadow-soft hover:shadow-glow transition">
+                <div className="w-28 h-16 flex items-center justify-center shrink-0 p-1">
+                  <img src="/assets/logos/cncc.png" alt="CNCC" className="w-full h-full object-contain" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-bold text-white text-sm">CNCC</p>
+                  <p className="text-xs text-gray-400 leading-snug mt-0.5">
+                    {language === 'ar' ? 'الغرفة الوطنية لمحافظي الحسابات' : 'Chambre Nationale des Commissaires aux Comptes'}
+                  </p>
+                </div>
               </div>
 
-              <select
-                value={selectedSpecialty}
-                onChange={e => setSelectedSpecialty(e.target.value)}
-                className="w-full border border-blue-200 bg-blue-50 rounded-xl text-slate-700 focus:border-brand-primary"
-              >
-                <option value="">{tx('allSpec')}</option>
-                {specialties.map(s => (
-                  <option key={s.key} value={s.key}>{s.icon} {tSpec(s.key)}</option>
-                ))}
-              </select>
+              {/* ONEC — white background */}
+              <div className="flex items-center gap-4 p-4 bg-white rounded-xl shadow-soft hover:shadow-glow transition">
+                <div className="w-28 h-16 flex items-center justify-center shrink-0 p-1">
+                  <img src="/assets/logos/onec.png" alt="ONEC" className="w-full h-full object-contain" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-bold text-slate-900 text-sm">ONEC</p>
+                  <p className="text-xs text-slate-500 leading-snug mt-0.5">
+                    {language === 'ar' ? 'المصف الوطني للخبراء المحاسبين' : 'Ordre National des Experts-Comptables'}
+                  </p>
+                </div>
+              </div>
 
-              <button
-                type="submit"
-                className="w-full py-3 bg-brand-primary hover:bg-brand-dark text-white font-bold text-sm rounded-xl transition shadow-sm flex items-center justify-center gap-2"
-              >
-                <Search className="w-4 h-4" />
-                {tx('searchBtn')}
-              </button>
+              {/* ONCA — dark background */}
+              <div className="flex items-center gap-4 p-4 bg-black rounded-xl shadow-soft hover:shadow-glow transition">
+                <div className="w-28 h-16 flex items-center justify-center shrink-0 p-1">
+                  <img src="/assets/logos/onca.png" alt="ONCA" className="w-full h-full object-contain" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-bold text-white text-sm">ONCA</p>
+                  <p className="text-xs text-gray-400 leading-snug mt-0.5">
+                    {language === 'ar' ? 'المنظمة الوطنية للمحاسبين المعتمدين' : 'Organisation Nationale des Comptables Agréés'}
+                  </p>
+                </div>
+              </div>
+
             </div>
-          </form>
+          </div>
+
         </div>
       </section>
 
-     
       {/* ══════════════════════════════════════════
-          4. INFO BAR — Real Map + Partner Logos
+          3. JOIN AS PROFESSIONAL
       ══════════════════════════════════════════ */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="max-w-7xl mx-auto bg-white border border-blue-100 rounded-2xl p-8 md:p-12 shadow-classic">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+      <section className="px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
 
-            {/* ── Google Maps — Real Algeria Map ── */}
-            <div className="relative rounded-2xl overflow-hidden border border-blue-200 shadow-glow" style={{ height: '440px' }}>
-              <iframe
-                src="https://maps.google.com/maps?q=Algeria&t=m&z=5&output=embed&iwloc=near"
-                title={language === 'ar' ? 'خريطة الجزائر' : "Carte de l'Algérie"}
-                width="100%"
-                height="100%"
-                style={{ border: 0, display: 'block' }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-              {/* Overlay badge */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/95 backdrop-blur-sm border border-blue-200 rounded-xl px-4 py-2 shadow-sm pointer-events-none whitespace-nowrap">
-                <span className="w-2 h-2 rounded-full bg-brand-primary animate-pulse" />
-                <span className="text-xs font-mono font-bold text-brand-primary">{tx('mapBadge')}</span>
-              </div>
+          <div className="flex items-center justify-center">
+            <img
+              src="/assets/ProSpace_Illustration.svg"
+              alt="Professional Space Illustration"
+              className="w-full max-w-md animate-float drop-shadow-lg"
+            />
+          </div>
+
+          <div className="space-y-6 text-left rtl:text-right">
+            <div className="flex items-center gap-3">
+              <span className="px-3 py-1.5 bg-brand-light text-brand-primary text-xs font-mono font-bold uppercase tracking-wider rounded">
+                {tx('sectionLabelPros')}
+              </span>
+              <span className="w-10 h-px bg-brand-primary/40" />
             </div>
 
-            {/* ── Partner Logos ── */}
-            <div className="space-y-6">
-              <div className="text-left rtl:text-right">
-                <h3 className="font-serif font-black text-slate-800 text-xl mb-1">{tx('partners')}</h3>
-                <p className="text-slate-500 text-sm">{tx('partnersSub')}</p>
-              </div>
+            <h2 className="font-serif font-black text-slate-900 leading-tight">
+              {tx('proSpaceTitle')}
+            </h2>
 
-              <div className="space-y-4">
+            <div className="border border-blue-200 rounded-2xl p-5 bg-white shadow-soft">
+              <p className="text-slate-500 leading-relaxed">
+                {tx('proSpaceBody')}
+              </p>
+            </div>
 
-                {/* CNCC — dark background */}
-                <div className="flex items-center gap-4 p-4 bg-black rounded-xl border border-slate-700 hover:border-brand-primary transition">
-                  <div className="w-28 h-16 flex items-center justify-center shrink-0 p-1">
-                    <img src="/assets/logos/cncc.png" alt="CNCC" className="w-full h-full object-contain" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-bold text-white text-sm">CNCC</p>
-                    <p className="text-xs text-gray-400 leading-snug mt-0.5">
-                      {language === 'ar' ? 'الغرفة الوطنية لمحافظي الحسابات' : 'Chambre Nationale des Commissaires aux Comptes'}
-                    </p>
-                  </div>
-                  <span className="shrink-0 flex items-center gap-1 text-xs font-mono text-white/70 bg-white/10 border border-white/20 px-2.5 py-1 rounded-lg">
-                    <ShieldCheck className="w-3 h-3" /> {tx('partner')}
-                  </span>
-                </div>
+            <button
+              onClick={() => navigate('/register?role=accountant')}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-dark text-white font-bold text-sm rounded-xl shadow-glow hover:shadow-none transition-all duration-200"
+            >
+              {tx('joinAsProBtn')}
+            </button>
+          </div>
 
-                {/* ONEC — white background */}
-                <div className="flex items-center gap-4 p-4 bg-white rounded-xl border border-blue-200 hover:border-brand-primary transition">
-                  <div className="w-28 h-16 flex items-center justify-center shrink-0 p-1">
-                    <img src="/assets/logos/onec.png" alt="ONEC" className="w-full h-full object-contain" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-bold text-slate-900 text-sm">ONEC</p>
-                    <p className="text-xs text-slate-500 leading-snug mt-0.5">
-                      {language === 'ar' ? 'المصف الوطني للمهنيين المحاسبيين' : 'Ordre National des Experts-Comptables'}
-                    </p>
-                  </div>
-                  <span className="shrink-0 flex items-center gap-1 text-xs font-mono text-brand-primary bg-brand-primary/10 border border-brand-primary/20 px-2.5 py-1 rounded-lg">
-                    <ShieldCheck className="w-3 h-3" /> {tx('partner')}
-                  </span>
-                </div>
+        </div>
+      </section>
 
-                {/* ONCA — dark background */}
-                <div className="flex items-center gap-4 p-4 bg-black rounded-xl border border-slate-700 hover:border-brand-primary transition">
-                  <div className="w-28 h-16 flex items-center justify-center shrink-0 p-1">
-                    <img src="/assets/logos/onca.png" alt="ONCA" className="w-full h-full object-contain" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-bold text-white text-sm">ONCA</p>
-                    <p className="text-xs text-gray-400 leading-snug mt-0.5">
-                      {language === 'ar' ? 'المنظمة الوطنية للمحاسبين المعتمدين' : 'Organisation Nationale des Comptables Agréés'}
-                    </p>
-                  </div>
-                  <span className="shrink-0 flex items-center gap-1 text-xs font-mono text-white/70 bg-white/10 border border-white/20 px-2.5 py-1 rounded-lg">
-                    <ShieldCheck className="w-3 h-3" /> {tx('partner')}
-                  </span>
-                </div>
+      {/* ══════════════════════════════════════════
+          4. NATIONAL COVERAGE
+      ══════════════════════════════════════════ */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
 
-              </div>
+          <div className="space-y-6 text-left rtl:text-right">
+            <div className="flex items-center gap-3">
+              <span className="px-3 py-1.5 bg-brand-light text-brand-primary text-xs font-mono font-bold uppercase tracking-wider rounded">
+                {tx('coverageLabel')}
+              </span>
+              <span className="w-10 h-px bg-brand-primary/40" />
+            </div>
+
+            <h2 className="font-serif font-black text-slate-900 leading-tight">
+              {tx('coverageTitle')}
+            </h2>
+
+            <div className="border border-blue-200 rounded-2xl p-5 bg-white shadow-soft">
+              <p className="text-slate-500 leading-relaxed">
+                {tx('coverageBody')}
+              </p>
             </div>
 
           </div>
+
+          <div className="flex items-center justify-center">
+            <img
+              src="/assets/AlgeriaCoverage_Map.avif"
+              alt="Algeria Coverage Map"
+              className="w-full max-w-md animate-float drop-shadow-lg"
+            />
+          </div>
+
         </div>
       </section>
 

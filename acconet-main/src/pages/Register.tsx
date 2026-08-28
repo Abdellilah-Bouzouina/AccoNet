@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useApp } from '../context/AppContext';
 import { algerianWilayas } from '../data/algerianWilayas';
 import { supabase } from '../lib/supabaseClient';
+import { AuthSidePanel } from '../components/AuthSidePanel';
 import {
   Building2, UserCheck, Mail, Lock, MapPin, ArrowRight,
   UserPlus, Loader2, AlertCircle, BadgeCheck, Phone
@@ -12,11 +13,12 @@ import {
 type RegRole = 'business' | 'accountant';
 
 export const Register: React.FC = () => {
-  const { direction, language } = useLanguage();
+  const { t, direction, language } = useLanguage();
   const { triggerNotification } = useApp();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const [regRole, setRegRole] = useState<RegRole>('business');
+  const [regRole, setRegRole] = useState<RegRole>(searchParams.get('role') === 'accountant' ? 'accountant' : 'business');
 
   // Shared fields
   const [fullName, setFullName] = useState('');
@@ -113,21 +115,21 @@ export const Register: React.FC = () => {
     );
   };
 
-  return (
-    <div className="min-h-[calc(100vh-4rem)] flex justify-center items-center px-4 py-12 bg-white" dir={direction}>
-      <div className="max-w-lg w-full space-y-8">
+  if (success) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] flex justify-center items-center px-4 py-12 bg-slate-50" dir={direction}>
+        <div className="max-w-lg w-full space-y-8">
 
-        <Link to="/" className="flex items-center justify-center gap-2.5 mb-4">
-          <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-brand-primary/10 text-brand-primary font-bold text-lg border border-blue-200">
-            أ
-          </span>
-          <span className="text-xl font-serif font-semibold tracking-tight text-slate-900">
-            AccoNet <span className="text-brand-primary">أكونيت</span>
-          </span>
-        </Link>
+          <Link to="/" className="flex items-center justify-center gap-2.5 mb-4">
+            <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-brand-primary/10 text-brand-primary font-bold text-lg border border-blue-200">
+              أ
+            </span>
+            <span className="text-xl font-serif font-semibold tracking-tight text-slate-900">
+              AccoNet <span className="text-brand-primary">أكونيت</span>
+            </span>
+          </Link>
 
-        {success ? (
-          <div className="bg-white border border-blue-200 p-8 sm:p-10 text-center space-y-6 rounded-2xl shadow-classic">
+          <div className="bg-white p-8 sm:p-10 text-center space-y-6 rounded-3xl shadow-glow">
             <div className="w-16 h-16 bg-emerald-100 border border-emerald-200 flex items-center justify-center mx-auto rounded-full">
               <BadgeCheck className="w-10 h-10 text-emerald-600" />
             </div>
@@ -145,14 +147,39 @@ export const Register: React.FC = () => {
             </div>
             <Link
               to="/login"
-              className="inline-flex items-center gap-1.5 px-6 py-3 bg-brand-primary text-white rounded-xl text-sm font-bold hover:bg-brand-dark transition"
+              className="inline-flex items-center gap-1.5 px-6 py-3 bg-brand-primary text-white rounded-full text-sm font-bold hover:bg-brand-dark transition"
             >
               {tx('الذهاب لتسجيل الدخول', 'Aller à la connexion', 'Go to Login')}
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-        ) : (
-          <div className="bg-white border border-blue-200 rounded-2xl p-6 sm:p-8 shadow-classic space-y-6">
+
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-slate-50 px-4 py-12 relative overflow-hidden" dir={direction}>
+
+      {/* Decorative shapes bleeding past the card's corners */}
+      <div
+        className="hidden lg:block absolute -top-10 -start-10 w-40 h-40 bg-brand-primary/10 -rotate-12"
+        style={{ clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%)' }}
+      />
+      <div className="hidden lg:block absolute -bottom-16 -end-16 w-52 h-52 bg-brand-light rounded-full" />
+
+      <div className="relative z-10 w-full max-w-4xl bg-white rounded-3xl shadow-glow overflow-hidden grid lg:grid-cols-2">
+
+        <AuthSidePanel
+          title={t('authNewHereTitle')}
+          subtitle={t('authNewHereSubtitle')}
+          ctaLabel={t('loginLink')}
+          ctaTo="/login"
+        />
+
+        <div className="px-6 py-10 sm:px-10 lg:px-10 overflow-y-auto max-h-[calc(100vh-8rem)] lg:max-h-none">
+          <div className="max-w-md w-full mx-auto space-y-6">
 
             <div className="text-center space-y-1">
               <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 flex items-center justify-center gap-2">
@@ -206,7 +233,7 @@ export const Register: React.FC = () => {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full border border-blue-200 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:border-brand-primary"
+                  className="w-full bg-slate-100 rounded-full px-5 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 transition"
                 />
               </div>
 
@@ -215,7 +242,7 @@ export const Register: React.FC = () => {
                   <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
                     {tx('البريد الإلكتروني', 'E-mail', 'Email')}<span className="text-red-500"> *</span>
                   </label>
-                  <div className="flex items-center gap-2 border border-blue-200 rounded-lg px-3 py-2.5 bg-white focus-within:border-brand-primary">
+                  <div className="flex items-center gap-2 bg-slate-100 rounded-full px-5 py-3 focus-within:ring-2 focus-within:ring-brand-primary/30 transition">
                     <Mail className="w-4 h-4 text-slate-400 shrink-0" />
                     <input
                       type="email"
@@ -231,7 +258,7 @@ export const Register: React.FC = () => {
                   <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
                     {tx('رقم الهاتف', 'Téléphone', 'Phone')}
                   </label>
-                  <div className="flex items-center gap-2 border border-blue-200 rounded-lg px-3 py-2.5 bg-white focus-within:border-brand-primary">
+                  <div className="flex items-center gap-2 bg-slate-100 rounded-full px-5 py-3 focus-within:ring-2 focus-within:ring-brand-primary/30 transition">
                     <Phone className="w-4 h-4 text-slate-400 shrink-0" />
                     <input
                       type="text"
@@ -250,7 +277,7 @@ export const Register: React.FC = () => {
                   <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
                     {tx('كلمة المرور', 'Mot de passe', 'Password')}<span className="text-red-500"> *</span>
                   </label>
-                  <div className="flex items-center gap-2 border border-blue-200 rounded-lg px-3 py-2.5 bg-white focus-within:border-brand-primary">
+                  <div className="flex items-center gap-2 bg-slate-100 rounded-full px-5 py-3 focus-within:ring-2 focus-within:ring-brand-primary/30 transition">
                     <Lock className="w-4 h-4 text-slate-400 shrink-0" />
                     <input
                       type="password"
@@ -265,7 +292,7 @@ export const Register: React.FC = () => {
                   <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
                     {tx('تأكيد كلمة المرور', 'Confirmer', 'Confirm password')}<span className="text-red-500"> *</span>
                   </label>
-                  <div className="flex items-center gap-2 border border-blue-200 rounded-lg px-3 py-2.5 bg-white focus-within:border-brand-primary">
+                  <div className="flex items-center gap-2 bg-slate-100 rounded-full px-5 py-3 focus-within:ring-2 focus-within:ring-brand-primary/30 transition">
                     <Lock className="w-4 h-4 text-slate-400 shrink-0" />
                     <input
                       type="password"
@@ -282,7 +309,7 @@ export const Register: React.FC = () => {
                 <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
                   {tx('الولاية', 'Wilaya', 'Wilaya')}
                 </label>
-                <div className="flex items-center gap-2 border border-blue-200 rounded-lg px-3 py-2.5 bg-white focus-within:border-brand-primary">
+                <div className="flex items-center gap-2 bg-slate-100 rounded-full px-5 py-3 focus-within:ring-2 focus-within:ring-brand-primary/30 transition">
                   <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
                   <select
                     value={wilayaId}
@@ -307,7 +334,7 @@ export const Register: React.FC = () => {
                       <select
                         value={specialty}
                         onChange={(e) => setSpecialty(e.target.value)}
-                        className="w-full border border-blue-200 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:border-indigo-600 cursor-pointer"
+                        className="w-full bg-slate-100 rounded-full px-5 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600/30 transition cursor-pointer"
                       >
                         <option value="certified-accountant">Expert-Comptable (ONEC)</option>
                         <option value="statutory-auditor">Commissaire aux Comptes (ONCC)</option>
@@ -325,7 +352,7 @@ export const Register: React.FC = () => {
                         value={accreditationNumber}
                         onChange={(e) => setAccreditationNumber(e.target.value)}
                         placeholder="ex: EC-16-0042"
-                        className="w-full border border-blue-200 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:border-indigo-600 font-mono uppercase"
+                        className="w-full bg-slate-100 rounded-full px-5 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600/30 transition font-mono uppercase"
                       />
                     </div>
                   </div>
@@ -357,7 +384,7 @@ export const Register: React.FC = () => {
                       type="text"
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
-                      className="w-full border border-blue-200 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:border-brand-primary"
+                      className="w-full bg-slate-100 rounded-full px-5 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 transition"
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -370,7 +397,7 @@ export const Register: React.FC = () => {
                         value={rcNumber}
                         onChange={(e) => setRcNumber(e.target.value)}
                         placeholder="16/00-0142578-B26"
-                        className="w-full border border-blue-200 rounded-lg px-3 py-2.5 text-sm font-mono text-slate-900 bg-white focus:outline-none focus:border-brand-primary"
+                        className="w-full bg-slate-100 rounded-full px-5 py-3 text-sm font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 transition"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -382,7 +409,7 @@ export const Register: React.FC = () => {
                         maxLength={15}
                         value={nifNumber}
                         onChange={(e) => setNifNumber(e.target.value.replace(/\D/g, ''))}
-                        className="w-full border border-blue-200 rounded-lg px-3 py-2.5 text-sm font-mono text-slate-900 bg-white focus:outline-none focus:border-brand-primary"
+                        className="w-full bg-slate-100 rounded-full px-5 py-3 text-sm font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 transition"
                       />
                     </div>
                   </div>
@@ -392,7 +419,7 @@ export const Register: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 bg-brand-primary hover:bg-brand-dark disabled:opacity-60 text-white font-bold text-sm rounded-xl transition flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-brand-primary hover:bg-brand-dark disabled:opacity-60 text-white font-bold text-sm rounded-full transition flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -403,7 +430,7 @@ export const Register: React.FC = () => {
 
             </form>
 
-            <p className="text-xs text-slate-400 text-center">
+            <p className="text-xs text-slate-400 text-center lg:hidden">
               {tx('لديك حساب بالفعل؟', 'Déjà inscrit ?', 'Already have an account?')}{' '}
               <Link to="/login" className="text-brand-primary font-bold hover:underline">
                 {tx('تسجيل الدخول', 'Connexion', 'Log in')}
@@ -411,8 +438,10 @@ export const Register: React.FC = () => {
             </p>
 
           </div>
-        )}
+        </div>
+
       </div>
+
     </div>
   );
 };

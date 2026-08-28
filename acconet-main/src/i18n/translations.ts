@@ -717,6 +717,26 @@ export const translations: TranslationDictionary = {
     fr: "Oublié?",
     en: "Forgot?"
   },
+  authNewHereTitle: {
+    ar: "مرحباً، صديقي!",
+    fr: "Bonjour, l'ami !",
+    en: "Hello, Friend!"
+  },
+  authNewHereSubtitle: {
+    ar: "أدخل بياناتك الشخصية وابدأ رحلتك معنا.",
+    fr: "Entrez vos informations personnelles et commencez votre aventure avec nous.",
+    en: "Enter your personal details and start your journey with us."
+  },
+  authWelcomeBackTitle: {
+    ar: "مرحباً بعودتك!",
+    fr: "Bon retour !",
+    en: "Welcome Back!"
+  },
+  authWelcomeBackSubtitle: {
+    ar: "للبقاء على تواصل معنا، يرجى تسجيل الدخول بمعلوماتك الشخصية.",
+    fr: "Pour rester connecté avec nous, veuillez vous connecter avec vos informations personnelles.",
+    en: "To keep connected with us, please login with your personal info."
+  },
   simulationTerminals: {
     ar: "نوافذ الولوج السريع للمحاكاة",
     fr: "Terminaux d'Accès Rapide de Simulation",

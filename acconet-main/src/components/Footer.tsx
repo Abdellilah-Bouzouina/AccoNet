@@ -18,11 +18,11 @@ export const Footer: React.FC = () => {
   const tx = (k: keyof typeof ui) => ui[k][language] || ui[k].ar;
 
   return (
-    <footer className="bg-white border-t border-blue-100 pt-14 pb-8" dir={direction}>
+    <footer className="bg-white shadow-soft pt-14 pb-8" dir={direction}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── MAIN GRID ── */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-blue-100">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12">
 
           {/* Brand */}
           <div className="md:col-span-2 space-y-4 text-left rtl:text-right">
@@ -81,7 +81,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* ── PARTNER LOGOS STRIP ── */}
-        <div className="my-8 p-6 bg-blue-50 border border-blue-100 rounded-2xl">
+        <div className="my-8 p-6 bg-blue-50 shadow-soft rounded-2xl">
           <p className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest text-center mb-5">
             {language === 'ar' ? 'الشركاء الرسميون' : 'Partenaires officiels'}
           </p>
@@ -108,7 +108,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* ── BOTTOM ── */}
-        <div className="flex flex-col md:flex-row justify-between items-center pt-6 border-t border-blue-100 text-sm text-slate-400 gap-3">
+        <div className="flex flex-col md:flex-row justify-between items-center pt-6 text-sm text-slate-400 gap-3">
           <p>© 2026 {t('brandName')} Algeria · {tx('rights')}</p>
           <p className="flex items-center gap-1.5">
             {tx('made')} <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" /> {tx('forAlg')}
